@@ -1,0 +1,188 @@
+force_cast: warning # implicitly
+
+force_try:
+  severity: warning # explicitly
+
+analyzer_rules: # rules run by `swiftlint analyze`
+  - capture_variable
+  - explicit_self
+  - typesafe_array_init
+  - unused_declaration
+  - unused_import
+  
+opt_in_rules: # some rules are only opt-in
+  - force_unwrapping
+  - closure_end_indentation
+  - closure_spacing
+  - collection_alignment
+  - compiler_protocol_init
+  - contains_over_filter_count
+  - contains_over_filter_is_empty
+  - contains_over_first_not_nil
+  - contains_over_range_nil_comparison
+  - discarded_notification_center_observer
+  - discouraged_direct_init
+  - discouraged_object_literal
+  - duplicate_enum_cases
+  - explicit_init
+  - empty_collection_literal
+  - empty_count
+  - indentation_width
+  - first_where
+  - missing_docs
+  - nimble_operator
+  - no_extension_access_modifier
+  - overridden_super_call
+  - prohibited_super_call
+  - redundant_nil_coalescing
+  - operator_usage_whitespace
+  - switch_case_on_newline
+  - discouraged_optional_boolean
+  - yoda_condition
+  - convenience_type
+  - vertical_parameter_alignment_on_call
+  - vertical_whitespace_between_cases
+  - vertical_whitespace_closing_braces
+  
+# Elevate warnings to errors
+class_delegate_protocol:
+  severity: error
+closing_brace:
+  severity: error
+closure_spacing:
+  severity: error
+collection_alignment:
+  severity: error
+compiler_protocol_init:
+  severity: error
+colon:
+  severity: error
+comma:
+  severity: error
+contains_over_filter_count:
+  severity: error
+contains_over_filter_is_empty:
+  severity: error
+contains_over_first_not_nil:
+  severity: error
+contains_over_range_nil_comparison:
+  severity: error
+convenience_type:
+  severity: error
+control_statement:
+  severity: error
+discarded_notification_center_observer:
+  severity: error
+discouraged_direct_init:
+  severity: error
+discouraged_object_literal:
+  severity: error
+duplicate_imports:
+  severity: error
+duplicate_enum_cases:
+  severity: error
+indentation_width:
+  indentation_width: 2
+  include_compiler_directives: false
+empty_collection_literal:
+  severity: error
+empty_count:
+  severity: error
+operator_usage_whitespace:
+  severity: error
+overridden_super_call:
+  severity: error
+mark: error
+missing_docs:
+  severity: error
+nesting:
+  type_level: 2
+statement_position:
+  severity: error
+superfluous_disable_command: error
+trailing_whitespace:
+  severity: error
+trailing_newline:
+  severity: error
+vertical_whitespace:
+  severity: error
+vertical_parameter_alignment_on_call:
+  severity: error
+vertical_whitespace_between_cases:
+  severity: error
+vertical_whitespace_closing_braces:
+  severity: error
+orphaned_doc_comment:
+  severity: error
+
+disabled_rules:
+  - anyobject_protocol
+  - extension_access_modifier
+  - opening_brace
+  - switch_case_alignment
+  - todo
+  - trailing_comma
+  - unused_capture_list
+  
+force_cast: warning # Eventually this should be removed and reverted back to an error.
+
+identifier_name:
+  min_length:
+    error: 2
+  excluded:
+    - id
+    - to
+    - gb
+    - uk
+    - us
+    - es
+    - ok
+    - vc
+    - sR
+    - sG
+    - sB
+    - eR
+    - eG
+    - eB
+    - at
+    - e
+    - i
+    - h # HSLuv hue
+    - s # HSLuv saturation
+    - l # HSLuv lightness
+    - u # HSLuv variable
+    - v # HSLuv variable
+    - r # HSLuv red
+    - g # HSLuv green
+    - b # HSLuv blue
+    - a # HSLuv alpha
+    - c # HSLuv variable
+    - x # HSLuv variable
+    - y # HSLuv variable
+    - z # HSLuv variable
+    - m # HSLuv Constant
+
+file_length:
+  warning: 800
+  error: 1000
+
+large_tuple:
+  warning: 4
+  error: 5
+
+line_length:
+  warning: 100
+  error: 100
+
+# they can set both implicitly with an array
+type_body_length:
+  - 600 # warning
+  - 600 # error
+
+excluded:
+  - "**/.build"
+  - "**/checkouts"
+  - "**/Package.swift"
+  - Pods
+  - Carthage
+  - SwiftPlaygrounds

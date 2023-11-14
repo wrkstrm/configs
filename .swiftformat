@@ -1,0 +1,46 @@
+--disable consecutiveSpaces, spaceInsideComments
+--enable blankLinesAtStartOfScope, blankLinesBetweenScopes
+
+--allman false
+--binarygrouping none
+--closingparen same-line
+--commas always
+--conflictmarkers reject
+--decimalgrouping 3,4
+--elseposition same-line
+--extensionacl on-declarations
+--empty void
+--exponentcase lowercase
+--exponentgrouping disabled
+--fractiongrouping disabled
+--fragment false
+--header ignore
+--hexgrouping none
+--hexliteralcase uppercase
+--ifdef outdent
+--importgrouping alphabetized
+--indent 2
+--indentcase true
+--linebreaks lf
+--maxwidth 100
+--nospaceoperators 
+--nowrapoperators 
+--octalgrouping none
+--operatorfunc spaced
+--patternlet hoist
+--ranges no-space
+--self remove
+--selfrequired 
+--semicolons never
+--shortoptionals always
+--specifierorder 
+--stripunusedargs always
+--tabwidth unspecified
+--trailingclosures 
+--trimwhitespace always
+--wraparguments before-first
+--wrapcollections before-first
+--wrapparameters preserve
+--xcodeindentation disabled
+
+--header
