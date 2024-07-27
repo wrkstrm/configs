@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug",
+      "program": "${workspaceFolder}/../configs/zsh/zshwift/.build/arm64-apple-macosx/debug/zshwift",
+      "stopOnEntry": true,
+      "preLaunchTask": "zshwift: Build",
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

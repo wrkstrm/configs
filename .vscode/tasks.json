@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "swift",
+      "args": ["build", "-Xswiftc", "-diagnostic-style=llvm"],
+      "env": {
+        "DEVELOPER_DIR": "/Applications/Xcode-beta.app"
+      },
+      "cwd": "${workspaceFolder}/configs/zsh/zshwift",
+      "disableTaskQueue": true,
+      "showBuildStatus": "swiftStatus",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "zshwift: Build",
+      "detail": "swift build -Xswiftc -diagnostic-style=llvm"
+    }
+  ]
+}
