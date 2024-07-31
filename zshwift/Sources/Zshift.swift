@@ -18,7 +18,7 @@ struct Zshift {
     NSString(string: path).expandingTildeInPath
   }
 
-    // Load excluded themes from file
+  /// Load excluded themes from file
   static func loadExcludedThemes(from path: String) -> [String] {
     if let contents = try? String(contentsOfFile: expandTilde(in: path), encoding: .utf8) {
       excludedThemes = contents.components(separatedBy: "\n")
