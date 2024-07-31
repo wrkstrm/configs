@@ -1,4 +1,14 @@
 {
+  "[swift]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2
+  },
+  "editor.formatOnSave": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+  "spellright.documentTypes": ["markdown"],
   "spellright.language": ["en"],
-  "spellright.documentTypes": ["markdown", "latex"]
+  "spellright.language": ["en"],
+  "spellright.language": ["en"]
 }
