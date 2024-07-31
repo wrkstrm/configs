@@ -78,7 +78,6 @@ enum Zshift {
     }
 
     // print("Error: Please provide the path to the excluded themes file as an argument.")
-
     let excludedThemes = loadExcludedThemes(from: excludedThemesPath)
     let availableThemes = getAvailableThemes(excludedThemes: excludedThemes)
     if let selectedTheme = getRandomTheme(from: availableThemes) {
