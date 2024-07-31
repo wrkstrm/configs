@@ -7,15 +7,17 @@ struct Zshift {
 
   static let defaultExcludedDir = "~/Code/configs/excluded_zsh_themes.txt"
 
-  /// Function to expand "~" in file paths
-  ///
+  /// Expand tilde in paths to get absolute paths
   /// Alternate version
   ///     guard let range = path.range(of: "~") else {
   ///    return path
   ///  }
   ///  return "\(NSHomeDirectory())\(path.replacingCharacters(in: range, with: ""))"
-  static func expandPath(_ path: String) -> String {
-    NSString(string: path).expandingTildeInPath
+  static func expandTilde(in path: String) -> String {
+    guard let range = path.range(of: "~") else {
+      return path
+    }
+    return "\(NSHomeDirectory())\(path.replacingCharacters(in: range, with: ""))"
   }
 
   /// Load excluded themes from file
