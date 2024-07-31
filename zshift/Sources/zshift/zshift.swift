@@ -1,8 +1,6 @@
 import Foundation
 
-// Main function
-
-enum Zshift {
+struct Zshift {
   // Define constants for themes directory
   static let themesDir = "~/.oh-my-zsh/themes/"
 
@@ -15,11 +13,8 @@ enum Zshift {
   ///    return path
   ///  }
   ///  return "\(NSHomeDirectory())\(path.replacingCharacters(in: range, with: ""))"
-  static func expandTilde(in path: String) -> String {
-    guard let range = path.range(of: "~") else {
-      return path
-    }
-    return "\(NSHomeDirectory())\(path.replacingCharacters(in: range, with: ""))"
+  static func expandPath(_ path: String) -> String {
+    NSString(string: path).expandingTildeInPath
   }
 
   /// Load excluded themes from file
@@ -51,44 +46,39 @@ enum Zshift {
       of: ".zsh-theme", with: "")
   }
 
-  // Print out the path to the selected theme in zsh-compatible format
-  static func printSelectedTheme(_ theme: String?) {
-    if let selectedTheme = theme {
-      print("ZSH_THEME=\(selectedTheme.replacingOccurrences(of: "~", with: "$HOME"))")
-    } else {
-      print("Error: No themes available")
-    }
-  }
 
   static func main() {
-    // Ask for the bad themes file path
-    print("Enter the path to your bad themes file (e.g., ~/excluded_zsh_themes.txt): ", terminator: "")
-    guard var excludedThemesPath = readLine() else {
-        fatalError("Failed to read file path")
-    }
-    // Maybe add as a resource?
-    if excludedThemesPath.count == 0 {
-      excludedThemesPath = defaultExcludedDir
-    }
+  // Ask for the bad themes file path
+  print("Enter the path to your bad themes file (e.g., ~/excluded_zsh_themes.txt): ", terminator: "")
+  guard var excludedThemesPath = readLine() else {
+      fatalError("Failed to read file path")
+  }
 
-    // print("Error: Please provide the path to the excluded themes file as an argument.")
+// Maybe add as a resource?
+  if excludedThemesPath.count == 0 {
+    excludedThemesPath = defaultExcludedDir
+  }
+
+    // Load exlcuded themes.
     let excludedThemes = loadExcludedThemes(from: excludedThemesPath)
-    let availableThemes = getAvailableThemes(excludedThemes: excludedThemes)
-    if let selectedTheme = getRandomTheme(from: availableThemes) {
-      printSelectedTheme(selectedTheme)
-    }
+    // Filter out the bad themes.
+    let goodThemes = getAvailableThemes(excludedThemes: excludedThemes)
 
-    // Alternative
+    // Choose a random good theme.
+    guard let randomTheme = getRandomTheme(from: goodThemes)
+
     // Construct the command to set the ZSH theme.
-    // let zshCommand =
-    //  "zsh -c 'ZSH_THEME=\(randomTheme.replacingOccurrences(of: ".zsh-theme", with: "")) && source ~/.zshrc'"
+    let zshCommand =
+      "zsh -c 'ZSH_THEME=\(randomTheme.replacingOccurrences(of: ".zsh-theme", with: "")) && source ~/.zshrc'"
 
     // Execute the command.
-    // let task = Process()
-    // task.launchPath = "/bin/bash"
-    // task.arguments = ["-c", zshCommand]
-    // task.launch()
-    // task.waitUntilExit()
+    let task = Process()
+    task.launchPath = "/bin/bash"
+    task.arguments = ["-c", zshCommand]
+    task.launch()
+    task.waitUntilExit()
+
+    print("Set ZSH theme to: \(randomTheme)")
   }
 }
 
