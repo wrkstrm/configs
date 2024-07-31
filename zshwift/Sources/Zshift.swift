@@ -19,13 +19,13 @@ struct Zshift {
   }
 
     // Load excluded themes from file
-  static func loadExcludedThemes(from path: String) -> [String] {
-        guard let excludedThemes = FileManager.default.contents(atPath: Self.expandPath(excludedThemesPath)),
-      let badThemesString = String(data: excludedThemes, encoding: .utf8)
-    else {
+  static func loadExcludedThemes(from path: String) -> Set<String> {
+    if let contents = try? String(contentsOfFile: expandTilde(in: path), encoding: .utf8) {
+      excludedThemes = contents.components(separatedBy: "\n")
+    } else {
       fatalError("Failed to load bad themes from \(excludedThemesPath)")
     }
-    let excludedThemes = Set(badThemesString.components(separatedBy: "\n").filter { !$0.isEmpty })
+    return Set(excludedThemes.filter { !$0.isEmpty })
   }
 
   // Load excluded themes from file

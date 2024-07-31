@@ -23,14 +23,13 @@ enum Zshift {
   }
 
   // Load excluded themes from file
-  static func loadExcludedThemes(from path: String) -> [String] {
-    var excludedThemes: [String] = []
+  static func loadExcludedThemes(from path: String) -> Set<String> {
     if let contents = try? String(contentsOfFile: expandTilde(in: path), encoding: .utf8) {
       excludedThemes = contents.components(separatedBy: "\n")
     } else {
-      print("\(path) Error: \(path) not found")
+      fatalError("Failed to load bad themes from \(excludedThemesPath)")
     }
-    return excludedThemes
+    return Set(excludedThemes.filter { !$0.isEmpty })
   }
 
   // Get the list of available themes and exclude the ones specified in the file
