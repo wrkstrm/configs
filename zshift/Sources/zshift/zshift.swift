@@ -10,7 +10,7 @@ enum Zshift {
   /// Function to expand "~" in file paths
   ///
   /// Alternate version
-  ///     guard let range = path.range(of: "~") else {
+  ///  guard let range = path.range(of: "~") else {
   ///    return path
   ///  }
   /// return "\(NSHomeDirectory())\(path.replacingCharacters(in: range, with: ""))"
