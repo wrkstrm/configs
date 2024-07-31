@@ -8,7 +8,5 @@
   "files.trimFinalNewlines": true,
   "files.trimTrailingWhitespace": true,
   "spellright.documentTypes": ["markdown"],
-  "spellright.language": ["en"],
-  "spellright.language": ["en"],
   "spellright.language": ["en"]
 }
