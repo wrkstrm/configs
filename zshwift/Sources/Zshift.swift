@@ -15,18 +15,18 @@ struct Zshift {
   static func main() {
   // Ask for the bad themes file path
   print("Enter the path to your bad themes file (e.g., ~/excluded_zsh_themes.txt): ", terminator: "")
-  guard var badThemesFile = readLine() else {
+  guard var excludedThemesPath = readLine() else {
       fatalError("Failed to read file path")
   }
 
-  if badThemesFile.count == 0 {
-    badThemesFile = defaultExcludedDir
+  if excludedThemesPath.count == 0 {
+    excludedThemesPath = defaultExcludedDir
   }
 
-    guard let badThemesData = FileManager.default.contents(atPath: Self.expandPath(badThemesFile)),
+    guard let badThemesData = FileManager.default.contents(atPath: Self.expandPath(excludedThemesPath)),
       let badThemesString = String(data: badThemesData, encoding: .utf8)
     else {
-      fatalError("Failed to load bad themes from \(badThemesFile)")
+      fatalError("Failed to load bad themes from \(excludedThemesPath)")
     }
     let badThemes = Set(badThemesString.components(separatedBy: "\n").filter { !$0.isEmpty })
 
