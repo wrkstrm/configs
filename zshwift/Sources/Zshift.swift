@@ -7,9 +7,36 @@ struct Zshift {
 
   static let defaultExcludedDir = "~/Code/configs/excluded_zsh_themes.txt"
 
-  // Function to expand "~" in file paths
+  /// Function to expand "~" in file paths
+  ///
+  /// Alternate version
+  ///     guard let range = path.range(of: "~") else {
+  ///    return path
+  ///  }
+  ///  return "\(NSHomeDirectory())\(path.replacingCharacters(in: range, with: ""))"
   static func expandPath(_ path: String) -> String {
     NSString(string: path).expandingTildeInPath
+  }
+
+    // Load excluded themes from file
+  static func loadExcludedThemes(from path: String) -> [String] {
+        guard let excludedThemes = FileManager.default.contents(atPath: Self.expandPath(excludedThemesPath)),
+      let badThemesString = String(data: excludedThemes, encoding: .utf8)
+    else {
+      fatalError("Failed to load bad themes from \(excludedThemesPath)")
+    }
+    let excludedThemes = Set(badThemesString.components(separatedBy: "\n").filter { !$0.isEmpty })
+  }
+
+  // Load excluded themes from file
+  static func loadExcludedThemes(from path: String) -> [String] {
+    var excludedThemes: [String] = []
+    if let contents = try? String(contentsOfFile: expandPath(path), encoding: .utf8) {
+      excludedThemes = contents.components(separatedBy: "\n")
+    } else {
+      print("\(path) Error: \(path) not found")
+    }
+    return excludedThemes
   }
 
   static func main() {
@@ -23,12 +50,7 @@ struct Zshift {
     excludedThemesPath = defaultExcludedDir
   }
 
-    guard let badThemesData = FileManager.default.contents(atPath: Self.expandPath(excludedThemesPath)),
-      let badThemesString = String(data: badThemesData, encoding: .utf8)
-    else {
-      fatalError("Failed to load bad themes from \(excludedThemesPath)")
-    }
-    let badThemes = Set(badThemesString.components(separatedBy: "\n").filter { !$0.isEmpty })
+    let excludedThemes = loadExcludedThemes(from: excludedThemesPath)
 
     // Get the list of all available ZSH themes.
     guard let allThemes = try? FileManager.default.contentsOfDirectory(atPath: Self.expandPath(themesDir)) else {
@@ -37,7 +59,7 @@ struct Zshift {
 
     // Filter out the bad themes.
     let goodThemes = allThemes.filter {
-      !badThemes.contains($0.replacingOccurrences(of: ".zsh-theme", with: ""))
+      !excludedThemes.contains($0.replacingOccurrences(of: ".zsh-theme", with: ""))
     }
 
     // Choose a random good theme.
