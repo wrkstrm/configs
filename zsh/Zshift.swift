@@ -2,7 +2,7 @@ import Foundation
 
 // Main function
 
-enum RandomTheme {
+enum Zshift {
   // Define constants for themes directory
   static let themesDir = "~/.oh-my-zsh/themes/"
 
@@ -81,4 +81,4 @@ enum RandomTheme {
   }
 }
 
-RandomTheme.main()
+Zshift.main()
