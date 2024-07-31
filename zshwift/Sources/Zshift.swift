@@ -7,17 +7,15 @@ struct Zshift {
 
   static let defaultExcludedDir = "~/Code/configs/excluded_zsh_themes.txt"
 
-  /// Expand tilde in paths to get absolute paths
+  /// Function to expand "~" in file paths
+  ///
   /// Alternate version
   ///     guard let range = path.range(of: "~") else {
   ///    return path
   ///  }
   ///  return "\(NSHomeDirectory())\(path.replacingCharacters(in: range, with: ""))"
-  static func expandTilde(in path: String) -> String {
-    guard let range = path.range(of: "~") else {
-      return path
-    }
-    return "\(NSHomeDirectory())\(path.replacingCharacters(in: range, with: ""))"
+  static func expandPath(_ path: String) -> String {
+    NSString(string: path).expandingTildeInPath
   }
 
   /// Load excluded themes from file
@@ -31,15 +29,16 @@ struct Zshift {
     return excludedThemes.filter { !$0.isEmpty }
   }
 
-  // Load excluded themes from file
-  static func loadExcludedThemes(from path: String) -> [String] {
-    var excludedThemes: [String] = []
-    if let contents = try? String(contentsOfFile: expandPath(path), encoding: .utf8) {
-      excludedThemes = contents.components(separatedBy: "\n")
-    } else {
-      print("\(path) Error: \(path) not found")
+  // Get the list of available themes and exclude the ones specified in the file
+  static func getAvailableThemes(excludedThemes: [String]) -> [String] {
+    // Get the list of all available ZSH themes.
+    guard let allThemes = try? FileManager.default.contentsOfDirectory(atPath: Self.expandPath(themesDir)) else {
+      fatalError("Failed to list themes at \(themesDir)")
     }
-    return excludedThemes
+    // Filter out the bad themes.
+    return allThemes.filter {
+      !excludedThemes.contains($0.replacingOccurrences(of: ".zsh-theme", with: ""))
+    }
   }
 
   static func main() {
@@ -49,21 +48,15 @@ struct Zshift {
       fatalError("Failed to read file path")
   }
 
+// Maybe add as a resource?
   if excludedThemesPath.count == 0 {
     excludedThemesPath = defaultExcludedDir
   }
 
+    // Load exlcuded themes.
     let excludedThemes = loadExcludedThemes(from: excludedThemesPath)
-
-    // Get the list of all available ZSH themes.
-    guard let allThemes = try? FileManager.default.contentsOfDirectory(atPath: Self.expandPath(themesDir)) else {
-      fatalError("Failed to list themes at \(themesDir)")
-    }
-
     // Filter out the bad themes.
-    let goodThemes = allThemes.filter {
-      !excludedThemes.contains($0.replacingOccurrences(of: ".zsh-theme", with: ""))
-    }
+    let goodThemes = getAvailableThemes(excludedThemes: excludedThemes)
 
     // Choose a random good theme.
     guard let randomTheme = goodThemes.randomElement() else {
