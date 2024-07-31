@@ -54,16 +54,14 @@ struct Zshift {
   }
 
   static func main() {
-    guard CommandLine.arguments.count < 3 else {
-      print("\(CommandLine.arguments) Too many arguments.")
-      return
+    // Ask for the bad themes file path
+    print("Enter the path to your bad themes file (e.g., ~/excluded_zsh_themes.txt): ", terminator: "")
+    guard var excludedThemesPath = readLine() else {
+        fatalError("Failed to read file path")
     }
-    let excludedThemesPath: String
-    if CommandLine.arguments.count == 2 {
-      excludedThemesPath = CommandLine.arguments.last!
-    } else {
-      // Check the current directory for the default.
-      excludedThemesPath = Self.defaultExcludedDir
+
+    if excludedThemesPath.count == 0 {
+      excludedThemesPath = defaultExcludedDir
     }
 
     // print("Error: Please provide the path to the excluded themes file as an argument.")
