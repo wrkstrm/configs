@@ -1,7 +1,7 @@
 import Foundation
 
 @main
-struct Zshwift {
+struct Zshift {
   static func main() {
       // Function to expand "~" in file paths
   func expandPath(_ path: String) -> String {
