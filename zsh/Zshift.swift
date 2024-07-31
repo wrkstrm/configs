@@ -22,14 +22,15 @@ enum Zshift {
     return "\(NSHomeDirectory())\(path.replacingCharacters(in: range, with: ""))"
   }
 
-  // Load excluded themes from file
-  static func loadExcludedThemes(from path: String) -> Set<String> {
+    // Load excluded themes from file
+  static func loadExcludedThemes(from path: String) -> [String] {
     if let contents = try? String(contentsOfFile: expandTilde(in: path), encoding: .utf8) {
       excludedThemes = contents.components(separatedBy: "\n")
     } else {
       fatalError("Failed to load bad themes from \(excludedThemesPath)")
     }
-    return Set(excludedThemes.filter { !$0.isEmpty })
+    // Probably make a Set to dedupe. Set(excludedThemes.filter { !$0.isEmpty })
+    return excludedThemes.filter { !$0.isEmpty }
   }
 
   // Get the list of available themes and exclude the ones specified in the file
