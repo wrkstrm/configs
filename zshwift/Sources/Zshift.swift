@@ -5,7 +5,7 @@ struct Zshift {
 
   // Function to expand "~" in file paths
   static func expandPath(_ path: String) -> String {
-      return NSString(string: path).expandingTildeInPath
+    NSString(string: path).expandingTildeInPath
   }
 
   static func main() {
