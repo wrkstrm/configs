@@ -2,9 +2,10 @@ import Foundation
 
 @main
 enum Zshift {
-  // Define constants for themes directory
+  /// Define constants for themes directory
   static let themesDir = "~/.oh-my-zsh/themes/"
 
+  /// Default directory while Bundle loading is fixed.
   static let defaultExcludedDir = "~/Code/configs/zshift/Sources/zshift/Resources/excluded_zsh_themes.txt"
 
   /// Function to expand "~" in file paths
@@ -74,14 +75,18 @@ enum Zshift {
       print("Error: No themes available")
     }
   }
+  
+  /// Read input
+  static func readInput() -> String {
+    print("Enter the path to your bad themes file (e.g., ~/excluded_zsh_themes.txt): ", terminator: "")
+    guard let excludedThemesPath = readLine() else {
+      fatalError("Failed to read file path")
+    }
+    return excludedThemesPath
+  }
 
   static func main() {
-    /// For the script version delete this for now.
-    /// Ask for the bad themes file path
-//    print("Enter the path to your bad themes file (e.g., ~/excluded_zsh_themes.txt): ", terminator: "")
-//    guard var excludedThemesPath = readLine() else {
-//      fatalError("Failed to read file path")
-//    }
+    /// For the script version just load the default
     var excludedThemesPath = ""
 
     // Maybe add as a resource?
