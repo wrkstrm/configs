@@ -41,6 +41,13 @@ struct Zshift {
     }
   }
 
+  // Randomly select a theme from the list of available ones
+  static func getRandomTheme(from themes: [String]) -> String? {
+    themes.randomElement()?.components(separatedBy: "/").last?.replacingOccurrences(
+      of: ".zsh-theme", with: "")
+  }
+
+
   static func main() {
   // Ask for the bad themes file path
   print("Enter the path to your bad themes file (e.g., ~/excluded_zsh_themes.txt): ", terminator: "")
@@ -59,9 +66,7 @@ struct Zshift {
     let goodThemes = getAvailableThemes(excludedThemes: excludedThemes)
 
     // Choose a random good theme.
-    guard let randomTheme = goodThemes.randomElement() else {
-      fatalError("No good themes found!")
-    }
+    guard let randomTheme = getRandomTheme(from: goodThemes)
 
     // Construct the command to set the ZSH theme.
     let zshCommand =
