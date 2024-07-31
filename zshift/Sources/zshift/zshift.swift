@@ -1,6 +1,7 @@
 import Foundation
 
-struct Zshift {
+@main
+enum Zshift {
   // Define constants for themes directory
   static let themesDir = "~/.oh-my-zsh/themes/"
 
@@ -81,6 +82,3 @@ struct Zshift {
     print("Set ZSH theme to: \(randomTheme)")
   }
 }
-
-// This let's this run as a script also
-Zshift.main()
