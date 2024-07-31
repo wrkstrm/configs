@@ -6,20 +6,9 @@ export ZSH="$HOME/.oh-my-zsh"
 
 eval "$(swift /Code/configs/RandomTheme.swift /Code/configs/excluded_zsh_themes.txt)"
 
-# Set name of the theme to load --- if set to "random", it will
-# load a random theme each time oh-my-zsh is loaded, in which case,
-# to know which specific one was loaded, run: echo $RANDOM_THEME
-# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-# ZSH_THEME="robbyrussell"
-ZSH_THEME=random
-
-# Set list of themes to pick from when loading at random
-# Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in $ZSH/themes/
-# If set to an empty array, this variable will have no effect.
-ZSH_THEME_RANDOM_CANDIDATES=( "3den" "adben" "afowler" "agnoster" "alanpeabody" "amuse" "arrow" "aussiegeek" "avit" "awesomepanda" "bira" "blinks" "bureau" "candy-kingdom" "candy" "clean" "cloud" "crcandy" "crunch" "cypher" "darkblood" "daveverwer" "dieter" "dst" "dstufft" "duellj" "edvardm" "emotty" "essembeh" "evan" "fino-time" "fino" "fishy" "flazz" "fletcherm" "fox" "frisk" "frontcube" "funky" "fwalch" "gallifrey" "garyblessington" "gentoo" "geoffgarside" "gnzh" "gozilla" "half-life" "humza" "imajes" "intheloop" "jaischeema" "jbergantine" "jispwoso" "jnrowe" "jonathan" "josh" "jreese" "jtriley" "juanghurtado" "junkfood" "kafeitu" "kennethreitz" "kiwi" "kolo" "kphoen" "lambda" "linuxonly" "lukerandall" "macovsky-ruby" "macovsky" "maran" "mgutz" "mh" "mikeh" "miloshadzic" "minimal" "mira" "mlh" "mortalscumbag" "mrtazz" "murilasso" "muse" "nanotech" "norm" "obraun" "oldgallois" "peepcode" "philips" "pmcgee" "pygmalion-virtualenv" "random" "re5et" "refined" "rgm" "risto" "rixius" "rkj-repos" "rkj" "robbyrussell" "skaro" "smt" "Soliah" "sonicradish" "sorin" "sporty_256" "steeef" "strug" "sunaku" "sunrise" "superjarin" "suvash" "takashiyoshida" "terminalparty" "theunraveler" "tjkirch" "tonotdo" "trapd00r" "wedisagree" "wezm" "wuffers" "xiong-chiamiov-plus" "xiong-chiamiov" "ys" "zhann" )
-
-# ZSH_THEME_BAD_RANDOM_CANDIDATES=( "af-magic" "apple" "dallas" "dogenpunk" "dpoggi" "gallois" "itchy" "kardan" "nebirhos" "eastwood" "gianu" "tjkirch" "michelebologna" "nicoulaj" "pygmalion" "sammy"  "simonoff" "simple" "tjkirch_mod" "wezm+")
+# Use the zshift package to select a random theme
+eval "$(cd ~/Code/configs/zshift && swift run 2>/dev/null)"
+echo "ZSH theme set to $ZSH_THEME"
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
