@@ -86,3 +86,6 @@ struct Zshift {
     // task.waitUntilExit()
   }
 }
+
+// This let's this run as a script also
+Zshift.main()
