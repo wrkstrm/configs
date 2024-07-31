@@ -2,6 +2,10 @@ import Foundation
 
 @main
 struct Zshift {
+  // Define constants for themes directory
+  static let themesDir = "~/.oh-my-zsh/themes/"
+
+  static let defaultExcludedDir = "~/Code/configs/excluded_zsh_themes.txt"
 
   // Function to expand "~" in file paths
   static func expandPath(_ path: String) -> String {
@@ -10,9 +14,13 @@ struct Zshift {
 
   static func main() {
   // Ask for the bad themes file path
-  print("Enter the path to your bad themes file (e.g., ~/bad_zsh_themes.txt): ", terminator: "")
-  guard let badThemesFile = readLine() else {
+  print("Enter the path to your bad themes file (e.g., ~/excluded_zsh_themes.txt): ", terminator: "")
+  guard var badThemesFile = readLine() else {
       fatalError("Failed to read file path")
+  }
+
+  if badThemesFile.count == 0 {
+    badThemesFile = defaultExcludedDir
   }
 
     guard let badThemesData = FileManager.default.contents(atPath: Self.expandPath(badThemesFile)),
@@ -23,9 +31,8 @@ struct Zshift {
     let badThemes = Set(badThemesString.components(separatedBy: "\n").filter { !$0.isEmpty })
 
     // Get the list of all available ZSH themes.
-    let themesPath = "~/.oh-my-zsh/themes"  // Update if your themes are located elsewhere
-    guard let allThemes = try? FileManager.default.contentsOfDirectory(atPath: Self.expandPath(themesPath)) else {
-      fatalError("Failed to list themes at \(themesPath)")
+    guard let allThemes = try? FileManager.default.contentsOfDirectory(atPath: Self.expandPath(themesDir)) else {
+      fatalError("Failed to list themes at \(themesDir)")
     }
 
     // Filter out the bad themes.
