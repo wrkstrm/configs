@@ -1,6 +1,8 @@
 import Foundation
 
-struct Zshift {
+// Main function
+
+enum Zshift {
   // Define constants for themes directory
   static let themesDir = "~/.oh-my-zsh/themes/"
 
@@ -13,19 +15,22 @@ struct Zshift {
   ///    return path
   ///  }
   ///  return "\(NSHomeDirectory())\(path.replacingCharacters(in: range, with: ""))"
-  static func expandPath(_ path: String) -> String {
-    NSString(string: path).expandingTildeInPath
+  static func expandTilde(in path: String) -> String {
+    guard let range = path.range(of: "~") else {
+      return path
+    }
+    return "\(NSHomeDirectory())\(path.replacingCharacters(in: range, with: ""))"
   }
 
-  // Load excluded themes from file
+  /// Load excluded themes from file
   static func loadExcludedThemes(from path: String) -> [String] {
-    var excludedThemes: [String] = []
-    if let contents = try? String(contentsOfFile: expandPath(path), encoding: .utf8) {
+    if let contents = try? String(contentsOfFile: expandTilde(in: path), encoding: .utf8) {
       excludedThemes = contents.components(separatedBy: "\n")
     } else {
-      print("\(path) Error: \(path) not found")
+      fatalError("Failed to load bad themes from \(excludedThemesPath)")
     }
-    return excludedThemes
+    // Probably make a Set to dedupe. Set(excludedThemes.filter { !$0.isEmpty })
+    return excludedThemes.filter { !$0.isEmpty }
   }
 
   // Get the list of available themes and exclude the ones specified in the file
