@@ -1,13 +1,16 @@
 af-magic
 apple
+cypher
 dallas
 dogenpunk
 dpoggi
 eastwood
+fishy
 gallois
 gianu
 itchy
 kardan
+macovsky
 michelebologna
 nebirhos
 nicoulaj
@@ -15,6 +18,7 @@ pygmalion
 sammy
 simonoff
 simple
+superjarin
 tjkirch
 tjkirch_mod
 wezm+
