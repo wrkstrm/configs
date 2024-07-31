@@ -8,29 +8,12 @@ enum Zshift {
 
   static let defaultExcludedDir = "~/Code/configs/excluded_zsh_themes.txt"
 
-  static func main() {
-    guard CommandLine.arguments.count < 3 else {
-      print("\(CommandLine.arguments) Too many arguments.")
-      return
-    }
-    let excludedThemesPath: String
-    if CommandLine.arguments.count == 2 {
-      excludedThemesPath = CommandLine.arguments.last!
-    } else {
-      // Check the current directory for the default.
-      excludedThemesPath = Self.defaultExcludedDir
-    }
-
-    // print("Error: Please provide the path to the excluded themes file as an argument.")
-
-    let excludedThemes = loadExcludedThemes(from: excludedThemesPath)
-    let availableThemes = getAvailableThemes(excludedThemes: excludedThemes)
-    if let selectedTheme = getRandomTheme(from: availableThemes) {
-      printSelectedTheme(selectedTheme)
-    }
-  }
-
-  // Expand tilde in paths to get absolute paths
+  /// Expand tilde in paths to get absolute paths
+  /// Alternate version
+  ///     guard let range = path.range(of: "~") else {
+  ///    return path
+  ///  }
+  ///  return "\(NSHomeDirectory())\(path.replacingCharacters(in: range, with: ""))"
   static func expandTilde(in path: String) -> String {
     guard let range = path.range(of: "~") else {
       return path
@@ -77,6 +60,28 @@ enum Zshift {
       print("ZSH_THEME=\(selectedTheme.replacingOccurrences(of: "~", with: "$HOME"))")
     } else {
       print("Error: No themes available")
+    }
+  }
+
+  static func main() {
+    guard CommandLine.arguments.count < 3 else {
+      print("\(CommandLine.arguments) Too many arguments.")
+      return
+    }
+    let excludedThemesPath: String
+    if CommandLine.arguments.count == 2 {
+      excludedThemesPath = CommandLine.arguments.last!
+    } else {
+      // Check the current directory for the default.
+      excludedThemesPath = Self.defaultExcludedDir
+    }
+
+    // print("Error: Please provide the path to the excluded themes file as an argument.")
+
+    let excludedThemes = loadExcludedThemes(from: excludedThemesPath)
+    let availableThemes = getAvailableThemes(excludedThemes: excludedThemes)
+    if let selectedTheme = getRandomTheme(from: availableThemes) {
+      printSelectedTheme(selectedTheme)
     }
   }
 }
