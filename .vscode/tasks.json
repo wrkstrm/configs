@@ -1,15 +1,72 @@
 {
   "tasks": [
     {
-      "command": "swiftlint",
+      "args": ["${file}"],
+      "command": "swift",
       "group": {
         "isDefault": true,
         "kind": "build"
       },
+      "label": "Swift Run Script",
+      "problemMatcher": [],
+      "type": "shell"
+    },
+    {
+      "args": [
+        "${file}",
+        "-o",
+        "${workspaceRoot}/.build/${fileBasenameNoExtension}"
+      ],
+      "command": "swiftc",
+      "group": {
+        "isDefault": false,
+        "kind": "build"
+      },
+      "label": "Swift Compile Script",
+      "problemMatcher": ["$swiftc"],
+      "type": "shell"
+    },
+    {
+      "args": [],
+      "command": "swift package clean",
+      "group": {
+        "isDefault": false,
+        "kind": "build"
+      },
+      "label": "Swift Package Clean",
+      "problemMatcher": [],
+      "type": "shell"
+    },
+    {
+      "args": [
+        "-i",
+        "--configuration",
+        "${workspaceRoot}/linting/.swift-format",
+        "${file}"
+      ],
+      "command": "swift-format",
+      "group": {
+        "isDefault": true,
+        "kind": "none"
+      },
+      "label": "swift-format",
+      "type": "shell"
+    },
+    {
+      "args": [
+        "--config",
+        "${workspaceFolder}/linting/.swiftlint.yml",
+        "--fix",
+        "${file}"
+      ],
+      "command": "swiftlint",
+      "group": {
+        "isDefault": true,
+        "kind": "none"
+      },
       "label": "SwiftLint",
       "options": {
         "cwd": "${workspaceFolder}" // Adjust if SwiftLint is in a different directory
-      },
       "presentation": {
         "clear": true,
         "close": true,
@@ -19,16 +76,66 @@
         "reveal": "always",
         "showReuseMessage": true
       },
-      "problemMatcher": [],
+      "problemMatcher": {
+        "fileLocation": ["absolute"],
+        "owner": "swift",
+        "pattern": [
+          {
+            "column": 3,
+            "file": 1,
+            "line": 2,
+            "message": 5,
+            "regexp": "^(.*)\\:(\\d+)\\:(\\d+)\\: (warning|error)\\: (.*)$",
+            "severity": 4
+          }
+        ]
+      },
       "type": "shell"
     },
     {
-      "args": ["build", "-diagnostic-style=llvm"],
+      "args": [
+        "--config",
+        "${workspaceFolder}/linting/.swiftlint-all.yml",
+        "${file}"
+      ],
+      "command": "swiftlint",
+      "group": {
+        "isDefault": true,
+        "kind": "none"
+      },
+      "label": "SwiftLintAll",
+      "presentation": {
+        "clear": true,
+        "close": true,
+        "echo": true,
+        "focus": true,
+        "panel": "shared",
+        "reveal": "always",
+        "showReuseMessage": true
+      },
+      "problemMatcher": {
+        "fileLocation": ["absolute"],
+        "owner": "swift",
+        "pattern": [
+          {
+            "column": 3,
+            "file": 1,
+            "line": 2,
+            "message": 5,
+            "regexp": "^(.*)\\:(\\d+)\\:(\\d+)\\: (warning|error)\\: (.*)$",
+            "severity": 4
+          }
+        ]
+      },
+      "type": "shell"
+    },
+    {
+      "args": ["build", "-Xswiftc", "-diagnostic-style=llvm"],
       "cwd": "${workspaceFolder:configs}/zshwift",
       "detail": "swift build -Xswiftc -diagnostic-style=llvm",
       "disableTaskQueue": true,
       "env": {
-        "DEVELOPER_DIR": "/Applications/Xcode-beta.app"
+        "DEVELOPER_DIR": "/Applications/Xcode.app"
       },
       "group": {
         "isDefault": true,
