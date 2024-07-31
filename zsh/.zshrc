@@ -4,11 +4,37 @@
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
-eval "$(swift /Code/configs/RandomTheme.swift /Code/configs/excluded_zsh_themes.txt)"
+# Use the built in random theme + ignored list to select a random theme
+ZSH_THEME_RANDOM_IGNORED=(
+  af-magic,
+  apple,
+  cypher,
+  dallas,
+  dogenpunk,
+  dpoggi,
+  eastwood,
+  fishy,
+  gallois,
+  gianu,
+  itchy,
+  kardan,
+  macovsky,
+  michelebologna,
+  nebirhos,
+  nicoulaj,
+  pygmalion,
+  sammy,
+  simonoff,
+  simple,
+  superjarin,
+  tjkirch,
+  tjkirch_mod,
+  wezm+
+)
+ZSH_THEME=random
 
-# Use the zshift package to select a random theme
-eval "$(cd ~/Code/configs/zshift && swift run 2>/dev/null)"
-echo "ZSH theme set to $ZSH_THEME"
+# Allow a theme to be easily set from the command line.
+alias ztheme='(){ export ZSH_THEME="$@" && source $ZSH/oh-my-zsh.sh }'
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -91,7 +117,5 @@ source $ZSH/oh-my-zsh.sh
 # For a full list of active aliases, run `alias`.
 #
 # Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-
-alias ztheme='(){ export ZSH_THEME="$@" && source $ZSH/oh-my-zsh.sh }'
+alias zshconfig="code ~/.zshrc"
+alias ohmyzsh="code ~/.oh-my-zsh"
