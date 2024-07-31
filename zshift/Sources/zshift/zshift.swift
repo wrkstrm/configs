@@ -13,7 +13,7 @@ enum Zshift {
   ///     guard let range = path.range(of: "~") else {
   ///    return path
   ///  }
-  ///  return "\(NSHomeDirectory())\(path.replacingCharacters(in: range, with: ""))"
+  /// return "\(NSHomeDirectory())\(path.replacingCharacters(in: range, with: ""))"
   static func expandTilde(in path: String) -> String {
     NSString(string: path).expandingTildeInPath
   }
