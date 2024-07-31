@@ -34,18 +34,14 @@ enum Zshift {
 
   // Get the list of available themes and exclude the ones specified in the file
   static func getAvailableThemes(excludedThemes: [String]) -> [String] {
-    var themes: [String] = []
-    let themeFiles = try? FileManager.default.contentsOfDirectory(
-      atPath: expandTilde(in: themesDir))
-    if let themeFiles = themeFiles {
-      for themeFile in themeFiles
-      where !excludedThemes.contains(themeFile) && themeFile.hasSuffix(".zsh-theme") {
-        themes.append(expandTilde(in: "\(Self.themesDir)\(themeFile)"))
-      }
-    } else {
-      print("Error: \(Self.themesDir) not found")
+    // Get the list of all available ZSH themes.
+    guard let allThemes = try? FileManager.default.contentsOfDirectory(atPath: Self.expandPath(themesDir)) else {
+      fatalError("Failed to list themes at \(themesDir)")
     }
-    return themes
+    // Filter out the bad themes.
+    return allThemes.filter {
+      !excludedThemes.contains($0.replacingOccurrences(of: ".zsh-theme", with: ""))
+    }
   }
 
   // Randomly select a theme from the list of available ones
