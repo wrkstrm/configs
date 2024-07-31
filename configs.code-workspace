@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "swift.path": "/Applications/Xcode_15.3.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin",
+    "swift.swiftEnvironmentVariables": {
+      "DEVELOPER_DIR": "/Applications/Xcode_15.3.app"
+    },
+    "lldb.library": "/Applications/Xcode_15.3.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/LLDB",
+    "lldb.launch.expressions": "native",
+    "editor.formatOnSave": true
+  }
+}
