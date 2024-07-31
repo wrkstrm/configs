@@ -6,7 +6,10 @@ let package = Package(
   platforms: [.macOS(.v10_15), .iOS(.v13), .tvOS(.v13), .watchOS(.v6), .macCatalyst(.v13)],
   targets: [
     .executableTarget(
-      name: "zshift"),
+      name: "zshift",
+      resources: [
+        .copy("Resources"), // This will copy all files in the Resources folder),
+      ]),
     .testTarget(
       name: "zshiftTests",
       dependencies: ["zshift"]),
