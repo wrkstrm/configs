@@ -1,19 +1,44 @@
 {
-  "version": "2.0.0",
   "tasks": [
     {
-      "type": "swift",
-      "args": ["build", "-Xswiftc", "-diagnostic-style=llvm"],
+      "command": "swiftlint",
+      "group": {
+        "isDefault": true,
+        "kind": "build"
+      },
+      "label": "SwiftLint",
+      "options": {
+        "cwd": "${workspaceFolder}" // Adjust if SwiftLint is in a different directory
+      },
+      "presentation": {
+        "clear": true,
+        "close": true,
+        "echo": true,
+        "focus": true,
+        "panel": "shared",
+        "reveal": "always",
+        "showReuseMessage": true
+      },
+      "problemMatcher": [],
+      "type": "shell"
+    },
+    {
+      "args": ["build", "-diagnostic-style=llvm"],
+      "cwd": "${workspaceFolder:configs}/zshwift",
+      "detail": "swift build -Xswiftc -diagnostic-style=llvm",
+      "disableTaskQueue": true,
       "env": {
         "DEVELOPER_DIR": "/Applications/Xcode-beta.app"
       },
-      "cwd": "${workspaceFolder}/configs/zsh/zshwift",
-      "disableTaskQueue": true,
-      "showBuildStatus": "swiftStatus",
-      "group": "build",
+      "group": {
+        "isDefault": true,
+        "kind": "build"
+      },
+      "label": "swift: Build Debug zshwift (zshwift)",
       "problemMatcher": [],
-      "label": "zshwift: Build",
-      "detail": "swift build -Xswiftc -diagnostic-style=llvm"
+      "showBuildStatus": "swiftStatus",
+      "type": "swift"
     }
-  ]
+  ],
+  "version": "2.0.0"
 }

@@ -4,12 +4,42 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug",
-      "program": "${workspaceFolder}/../configs/zsh/zshwift/.build/arm64-apple-macosx/debug/zshwift",
-      "stopOnEntry": true,
-      "preLaunchTask": "zshwift: Build",
+      "sourceLanguages": ["swift"],
       "args": [],
-      "cwd": "${workspaceFolder}"
+      "cwd": "${workspaceFolder:configs}/zshwift",
+      "name": "Debug zshwift (zsh/zshwift)",
+      "program": "${workspaceFolder:configs}/zshwift/.build/debug/zshwift",
+      "preLaunchTask": "zshwift: Build"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "sourceLanguages": ["swift"],
+      "args": [],
+      "cwd": "${workspaceFolder:configs}/zshwift",
+      "name": "Release zshwift (zsh/zshwift)",
+      "program": "${workspaceFolder:configs}/zshwift/.build/release/zshwift",
+      "preLaunchTask": "zshwift: Build"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "sourceLanguages": ["swift"],
+      "args": [],
+      "cwd": "${workspaceFolder:configs}/zshwift",
+      "name": "Debug zshwift (zshwift)",
+      "program": "${workspaceFolder:configs}/zshwift/.build/debug/zshwift",
+      "preLaunchTask": "swift: Build Debug zshwift (zshwift)"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "sourceLanguages": ["swift"],
+      "args": [],
+      "cwd": "${workspaceFolder:configs}/zshwift",
+      "name": "Release zshwift (zshwift)",
+      "program": "${workspaceFolder:configs}/zshwift/.build/release/zshwift",
+      "preLaunchTask": "swift: Build Release zshwift (zshwift)"
     }
   ]
 }
