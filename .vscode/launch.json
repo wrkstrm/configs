@@ -1,45 +1,36 @@
 {
-  "version": "0.2.0",
   "configurations": [
     {
-      "type": "lldb",
+      "name": "Debug zshift",
+      "preLaunchTask": "Swift Build: Zsh",
+      "program": ".build/debug/zshift",
       "request": "launch",
       "sourceLanguages": ["swift"],
-      "args": [],
-      "cwd": "${workspaceFolder:configs}/zshwift",
-      "name": "Debug zshwift (zsh/zshwift)",
-      "program": "${workspaceFolder:configs}/zshwift/.build/debug/zshwift",
-      "preLaunchTask": "zshwift: Build"
+      "type": "lldb"
     },
     {
-      "type": "lldb",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "name": "Debug Script",
+      "preLaunchTask": "Swift Compile File",
+      "program": "${workspaceFolder}/.build/debug/${fileBasenameNoExtension}",
       "request": "launch",
       "sourceLanguages": ["swift"],
-      "args": [],
-      "cwd": "${workspaceFolder:configs}/zshwift",
-      "name": "Release zshwift (zsh/zshwift)",
-      "program": "${workspaceFolder:configs}/zshwift/.build/release/zshwift",
-      "preLaunchTask": "zshwift: Build"
+      "type": "lldb"
     },
     {
-      "type": "lldb",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "name": "Release zshift (zshift)",
+      "preLaunchTask": "swift: Build Debug zshift (zshift)",
+      "program": "${workspaceFolder:configs}/zshift/.build/debug/zshift",
       "request": "launch",
       "sourceLanguages": ["swift"],
-      "args": [],
-      "cwd": "${workspaceFolder:configs}/zshwift",
-      "name": "Debug zshwift (zshwift)",
-      "program": "${workspaceFolder:configs}/zshwift/.build/debug/zshwift",
-      "preLaunchTask": "swift: Build Debug zshwift (zshwift)"
-    },
-    {
-      "type": "lldb",
-      "request": "launch",
-      "sourceLanguages": ["swift"],
-      "args": [],
-      "cwd": "${workspaceFolder:configs}/zshwift",
-      "name": "Release zshwift (zshwift)",
-      "program": "${workspaceFolder:configs}/zshwift/.build/release/zshwift",
-      "preLaunchTask": "swift: Build Release zshwift (zshwift)"
+      "type": "lldb"
     }
-  ]
+  ],
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0"
 }
