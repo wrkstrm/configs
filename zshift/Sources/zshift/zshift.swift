@@ -65,17 +65,28 @@ struct Zshift {
     guard var excludedThemesPath = readLine() else {
         fatalError("Failed to read file path")
     }
-
+    // Maybe add as a resource?
     if excludedThemesPath.count == 0 {
       excludedThemesPath = defaultExcludedDir
     }
 
     // print("Error: Please provide the path to the excluded themes file as an argument.")
-
     let excludedThemes = loadExcludedThemes(from: excludedThemesPath)
     let availableThemes = getAvailableThemes(excludedThemes: excludedThemes)
     if let selectedTheme = getRandomTheme(from: availableThemes) {
       printSelectedTheme(selectedTheme)
     }
+
+    // Alternative
+    // Construct the command to set the ZSH theme.
+    // let zshCommand =
+    //  "zsh -c 'ZSH_THEME=\(randomTheme.replacingOccurrences(of: ".zsh-theme", with: "")) && source ~/.zshrc'"
+
+    // Execute the command.
+    // let task = Process()
+    // task.launchPath = "/bin/bash"
+    // task.arguments = ["-c", zshCommand]
+    // task.launch()
+    // task.waitUntilExit()
   }
 }
