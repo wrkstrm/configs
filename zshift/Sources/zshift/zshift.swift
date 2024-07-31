@@ -28,7 +28,7 @@ enum Zshift {
     return excludedThemes.filter { !$0.isEmpty }
   }
 
-  // Get the list of available themes and exclude the ones specified in the file
+  /// Get the list of available themes and exclude the ones specified in the file
   static func getAvailableThemes(excludedThemes: [String]) -> [String] {
     // Get the list of all available ZSH themes.
     guard let allThemes = try? FileManager.default.contentsOfDirectory(atPath: Self.expandTilde(in: themesDir)) else {
@@ -40,13 +40,13 @@ enum Zshift {
     }
   }
 
-  // Randomly select a theme from the list of available ones
+  /// Randomly select a theme from the list of available ones
   static func getRandomTheme(from themes: [String]) -> String? {
     themes.randomElement()?.components(separatedBy: "/").last?.replacingOccurrences(
       of: ".zsh-theme", with: "")
   }
 
-  // Print out the path to the selected theme in zsh-compatible format
+  /// Print out the path to the selected theme in zsh-compatible format
   static func printSelectedTheme(_ theme: String?) {
     if let selectedTheme = theme {
       print("ZSH_THEME=\(selectedTheme.replacingOccurrences(of: "~", with: "$HOME"))")
@@ -76,6 +76,7 @@ enum Zshift {
     guard let randomTheme = getRandomTheme(from: goodThemes) else {
       fatalError("Random theme not there.")
     }
+
     printSelectedTheme(selectedTheme)
 
     // Construct the command to set the ZSH theme.
