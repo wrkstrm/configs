@@ -69,18 +69,20 @@ enum Zshift {
   /// Print out the path to the selected theme in zsh-compatible format
   static func printSelectedTheme(_ theme: String?) {
     if let selectedTheme = theme {
-      print("ZSH_THEME=\(selectedTheme.replacingOccurrences(of: "~", with: "$HOME"))")
+      print("ZSH_THEME=\(selectedTheme)")
     } else {
       print("Error: No themes available")
     }
   }
 
   static func main() {
-    // Ask for the bad themes file path
-    print("Enter the path to your bad themes file (e.g., ~/excluded_zsh_themes.txt): ", terminator: "")
-    guard var excludedThemesPath = readLine() else {
-      fatalError("Failed to read file path")
-    }
+    /// For the script version delete this for now.
+    /// Ask for the bad themes file path
+//    print("Enter the path to your bad themes file (e.g., ~/excluded_zsh_themes.txt): ", terminator: "")
+//    guard var excludedThemesPath = readLine() else {
+//      fatalError("Failed to read file path")
+//    }
+    var excludedThemesPath = ""
 
     // Maybe add as a resource?
     if excludedThemesPath.count == 0 {
