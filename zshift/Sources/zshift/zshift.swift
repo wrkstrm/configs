@@ -5,7 +5,7 @@ enum Zshift {
   // Define constants for themes directory
   static let themesDir = "~/.oh-my-zsh/themes/"
 
-  static let defaultExcludedDir = "~/Code/configs/excluded_zsh_themes.txt"
+  static let defaultExcludedDir = "~/Code/configs/zshift/Sources/zshift/Resources/excluded_zsh_themes.txt"
 
   /// Function to expand "~" in file paths
   ///
@@ -19,13 +19,33 @@ enum Zshift {
   }
 
   /// Load excluded themes from file
-  static func loadExcludedThemes(from path: String) -> [String] {
-    guard let contents = try? String(contentsOfFile: expandTilde(in: path), encoding: .utf8) else {
-      fatalError("Failed to load bad themes from \(path)")
-    }
-    let excludedThemes = contents.components(separatedBy: "\n")
-    // Probably make a Set to dedupe. Set(excludedThemes.filter { !$0.isEmpty })
-    return excludedThemes.filter { !$0.isEmpty }
+  /// Load excluded themes from file, falling back to default resource if necessary
+  static func loadExcludedThemes(from path: String? = nil) -> [String] {
+      let contents: String
+      
+      if let path = path {
+          // Try to load from the provided path
+          if let fileContents = try? String(contentsOfFile: expandTilde(in: path), encoding: .utf8) {
+              contents = fileContents
+          } else {
+              // If loading from path fails, try to load from the default resource
+              guard let url = Bundle.module.url(forResource: "excluded_zsh_themes", withExtension: "txt"),
+                    let defaultContents = try? String(contentsOf: url, encoding: .utf8) else {
+                  fatalError("Failed to load excluded themes from path and default resource")
+              }
+              contents = defaultContents
+          }
+      } else {
+          // If no path provided, load from the default resource
+          guard let url = Bundle.module.url(forResource: "excluded_zsh_themes", withExtension: "txt"),
+                let defaultContents = try? String(contentsOf: url, encoding: .utf8) else {
+              fatalError("Failed to load excluded themes from default resource")
+          }
+          contents = defaultContents
+      }
+      
+      let excludedThemes = contents.components(separatedBy: .newlines)
+      return Set(excludedThemes.filter { !$0.isEmpty }).sorted()
   }
 
   /// Get the list of available themes and exclude the ones specified in the file
@@ -77,7 +97,7 @@ enum Zshift {
       fatalError("Random theme not there.")
     }
 
-    printSelectedTheme(selectedTheme)
+    printSelectedTheme(randomTheme)
 
     // Construct the command to set the ZSH theme.
     // let zshCommand =
