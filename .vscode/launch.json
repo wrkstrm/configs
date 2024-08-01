@@ -20,13 +20,23 @@
     },
     {
       "args": [],
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder:configs}/zshift",
       "name": "Release zshift (zshift)",
-      "preLaunchTask": "swift: Build Debug zshift (zshift)",
-      "program": "${workspaceFolder:configs}/zshift/.build/debug/zshift",
+      "preLaunchTask": "swift: Build Release zshift (zshift)",
+      "program": "${workspaceFolder:configs}/zshift/.build/release/zshift",
       "request": "launch",
       "sourceLanguages": ["swift"],
       "type": "lldb"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "sourceLanguages": ["swift"],
+      "args": [],
+      "cwd": "${workspaceFolder:configs}/zshift",
+      "name": "Debug zshift (zshift)",
+      "program": "${workspaceFolder:configs}/zshift/.build/debug/zshift",
+      "preLaunchTask": "swift: Build Debug zshift (zshift)"
     }
   ],
   // Use IntelliSense to learn about possible attributes.
