@@ -6,7 +6,8 @@ enum Zshift {
   static let themesDir = "~/.oh-my-zsh/themes/"
 
   /// Default directory while Bundle loading is fixed.
-  static let defaultExcludedDir = "~/Code/configs/zshift/Sources/zshift/Resources/excluded_zsh_themes.txt"
+  static let defaultExcludedDir =
+    "~/Code/configs/zshift/Sources/zshift/Resources/excluded_zsh_themes.txt"
 
   /// Function to expand "~" in file paths
   ///
@@ -22,37 +23,42 @@ enum Zshift {
   /// Load excluded themes from file
   /// Load excluded themes from file, falling back to default resource if necessary
   static func loadExcludedThemes(from path: String? = nil) -> [String] {
-      let contents: String
-      
-      if let path = path {
-          // Try to load from the provided path
-          if let fileContents = try? String(contentsOfFile: expandTilde(in: path), encoding: .utf8) {
-              contents = fileContents
-          } else {
-              // If loading from path fails, try to load from the default resource
-              guard let url = Bundle.module.url(forResource: "excluded_zsh_themes", withExtension: "txt"),
-                    let defaultContents = try? String(contentsOf: url, encoding: .utf8) else {
-                  fatalError("Failed to load excluded themes from path and default resource")
-              }
-              contents = defaultContents
-          }
+    let contents: String
+
+    if let path = path {
+      // Try to load from the provided path
+      if let fileContents = try? String(contentsOfFile: expandTilde(in: path), encoding: .utf8) {
+        contents = fileContents
       } else {
-          // If no path provided, load from the default resource
-          guard let url = Bundle.module.url(forResource: "excluded_zsh_themes", withExtension: "txt"),
-                let defaultContents = try? String(contentsOf: url, encoding: .utf8) else {
-              fatalError("Failed to load excluded themes from default resource")
-          }
-          contents = defaultContents
+        // If loading from path fails, try to load from the default resource
+        guard let url = Bundle.module.url(forResource: "excluded_zsh_themes", withExtension: "txt"),
+          let defaultContents = try? String(contentsOf: url, encoding: .utf8)
+        else {
+          fatalError("Failed to load excluded themes from path and default resource")
+        }
+        contents = defaultContents
       }
-      
-      let excludedThemes = contents.components(separatedBy: .newlines)
-      return Set(excludedThemes.filter { !$0.isEmpty }).sorted()
+    } else {
+      // If no path provided, load from the default resource
+      guard let url = Bundle.module.url(forResource: "excluded_zsh_themes", withExtension: "txt"),
+        let defaultContents = try? String(contentsOf: url, encoding: .utf8)
+      else {
+        fatalError("Failed to load excluded themes from default resource")
+      }
+      contents = defaultContents
+    }
+
+    let excludedThemes = contents.components(separatedBy: .newlines)
+    return Set(excludedThemes.filter { !$0.isEmpty }).sorted()
   }
 
   /// Get the list of available themes and exclude the ones specified in the file
   static func getAvailableThemes(excludedThemes: [String]) -> [String] {
     // Get the list of all available ZSH themes.
-    guard let allThemes = try? FileManager.default.contentsOfDirectory(atPath: Self.expandTilde(in: themesDir)) else {
+    guard
+      let allThemes = try? FileManager.default.contentsOfDirectory(
+        atPath: Self.expandTilde(in: themesDir))
+    else {
       fatalError("Failed to list themes at \(themesDir)")
     }
     // Filter out the bad themes.
@@ -75,10 +81,11 @@ enum Zshift {
       print("Error: No themes available")
     }
   }
-  
+
   /// Read input
   static func readInput() -> String {
-    print("Enter the path to your bad themes file (e.g., ~/excluded_zsh_themes.txt): ", terminator: "")
+    print(
+      "Enter the path to your bad themes file (e.g., ~/excluded_zsh_themes.txt): ", terminator: "")
     guard let excludedThemesPath = readLine() else {
       fatalError("Failed to read file path")
     }
