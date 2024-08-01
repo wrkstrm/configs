@@ -5,12 +5,14 @@ dallas
 dogenpunk
 dpoggi
 eastwood
+eastwood
 fishy
 gallois
 gianu
 itchy
 kardan
 macovsky
+macovsky-ruby
 michelebologna
 nebirhos
 nicoulaj
