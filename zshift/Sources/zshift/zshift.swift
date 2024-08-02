@@ -20,8 +20,9 @@ enum Zshift {
     NSString(string: path).expandingTildeInPath
   }
 
-  /// Load excluded themes from file
   /// Load excluded themes from file, falling back to default resource if necessary
+  /// NOTE: An fatal error if the file cannot be read.
+  /// - Parameter path The path to the file containing the list of excluded themes.
   static func loadExcludedThemes(from path: String? = nil) -> [String] {
     let contents: String
 
