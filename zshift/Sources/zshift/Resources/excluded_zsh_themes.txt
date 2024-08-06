@@ -2,6 +2,7 @@ af-magic
 apple
 cypher
 dallas
+darkblood
 dogenpunk
 dpoggi
 eastwood
@@ -11,6 +12,7 @@ gallois
 gianu
 itchy
 kardan
+kafeitu
 macovsky
 macovsky-ruby
 michelebologna
