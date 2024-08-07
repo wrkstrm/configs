@@ -1,11 +1,16 @@
 # If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$HOME/.swiftpm/bin:$PATH
+export PATH="/usr/local/bin:$PATH"
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
 # Use the zshift package to select a random theme
-eval "$(cd ~/Code/configs/zshift && swift run 2>/dev/null)"
+if which swiftformat >/dev/null; then
+  cd ~/Code/configs/zshift
+  swift swift package experimental-install 2>/dev/null
+if
+eval "$(zshift && swift run 2>/dev/null)"
 echo "ZSH theme set to $ZSH_THEME"
 
 # Uncomment the following line to use case-sensitive completion.
@@ -90,6 +95,6 @@ source $ZSH/oh-my-zsh.sh
 #
 # Example aliases
 
-alias zshconfig="mate ~/.zshrc"
-alias ohmyzsh="mate ~/.oh-my-zsh"
+alias zshconfig="code ~/.zshrc"
+alias ohmyzsh="code ~/.oh-my-zsh"
 alias ztheme='(){ export ZSH_THEME="$@" && source $ZSH/oh-my-zsh.sh }'
