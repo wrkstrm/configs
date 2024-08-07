@@ -11,6 +11,14 @@
     },
     "lldb.library": "/Applications/Xcode_15.3.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/LLDB",
     "lldb.launch.expressions": "native",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "workbench.colorCustomizations": {
+      "activityBar.foreground": "#f6f6f6",
+      "iLoveWorkSpaceColors": true,
+      "iLoveWorkSpaceRandom": true,
+      "activityBar.background": "#093428",
+      "titleBar.activeBackground": "#0D4938",
+      "titleBar.activeForeground": "#F0FCF9"
+    }
   }
 }
