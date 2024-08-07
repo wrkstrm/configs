@@ -10,6 +10,7 @@ eastwood
 fishy
 gallois
 gianu
+half-life
 itchy
 kafeitu
 kardan
@@ -23,6 +24,7 @@ pygmalion
 sammy
 simonoff
 simple
+sunaku
 superjarin
 tjkirch
 tjkirch_mod
