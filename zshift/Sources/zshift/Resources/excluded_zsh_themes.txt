@@ -11,8 +11,9 @@ fishy
 gallois
 gianu
 itchy
-kardan
 kafeitu
+kardan
+kennethreitz
 macovsky
 macovsky-ruby
 michelebologna
