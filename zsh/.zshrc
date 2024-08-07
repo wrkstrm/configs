@@ -46,7 +46,9 @@ random_theme() {
   theme_name=$(echo "$output" | grep -v '^$' | tail -n 1 | sed 's/^ZSH_THEME=//')
 
   if [[ -n "$theme_name" ]]; then
-    export ZSH_THEME="$theme_name"
+    eval "ZSH_THEME=$theme_name"
+    # Source oh-my-zsh to apply the new theme
+    source $ZSH/oh-my-zsh.sh
     return 0
   else
     echo "No theme name found in zshift output."
@@ -78,9 +80,28 @@ like_theme() {
 
   # Call zshift to like the theme
   zshift like "$theme_name"
+}
+
+exclude_theme() {
+  if [ $# -eq 0 ]; then
+    echo "Usage: exclude_theme <theme_name>"
+    return 1
+  fi
+
+  local theme_name="$1"
+  local theme_file="$ZSH/themes/${theme_name}.zsh-theme"
+
+  if [ ! -f "$theme_file" ]; then
+    echo "Theme $theme_name does not exist."
+    return 1
+  fi
+
+  # Call zshift to like the theme
+  zshift exclude "$theme_name"
 
   if [ $? -eq 0 ]; then
-    echo "Liked theme: $theme_name"
+    echo "Exluded theme: $theme_name"
+    random_theme
   fi
 }
 
@@ -133,7 +154,11 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git mercurial)
+plugins=(
+  git
+  mercurial
+  zsh-syntax-highlighting
+)
 
 # User configuration
 
@@ -156,14 +181,14 @@ plugins=(git mercurial)
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
-#
-# Example aliases
 
 alias zshconfig="code ~/.zshrc"
 alias ohmyzsh="code ~/.oh-my-zsh"
 alias ztheme='(){ export ZSH_THEME="$@" && source $ZSH/oh-my-zsh.sh }'
 
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
 # Record the end time
 end_time=$EPOCHREALTIME
 elapsed_time=$(($end_time - $start_time))
-echo "zshrc loaded in $elapsed_time seconds"
+echo ".zshrc loaded in $elapsed_time seconds"
