@@ -1,17 +1,22 @@
-# If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$HOME/.swiftpm/bin:$PATH
-export PATH="/usr/local/bin:$PATH"
+zmodload zsh/datetime
+# Record the start time
+start_time=$EPOCHREALTIME
 
+# Update path $PATH.
+export PATH=/usr/local/bin:$PATH
+export PATH=$HOME/bin:$PATH
+export PATH=$HOME/.local/bin:$PATH
+export PATH=$HOME/.swiftpm/bin:$PATH
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
 # Use the zshift package to select a random theme
-if which swiftformat >/dev/null; then
+if ! [ -x "$(command -v zshift)" ]; then
   cd ~/Code/configs/zshift
-  swift swift package experimental-install 2>/dev/null
-if
-eval "$(zshift && swift run 2>/dev/null)"
-echo "ZSH theme set to $ZSH_THEME"
+  swift package experimental-install 2>/dev/null
+fi
+eval "$(zshift)"
+echo "ZSH theme set to: $ZSH_THEME"
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -96,3 +101,8 @@ source $ZSH/oh-my-zsh.sh
 alias zshconfig="code ~/.zshrc"
 alias ohmyzsh="code ~/.oh-my-zsh"
 alias ztheme='(){ export ZSH_THEME="$@" && source $ZSH/oh-my-zsh.sh }'
+
+# Record the end time
+end_time=$EPOCHREALTIME
+elapsed_time=$(( $end_time - $start_time ))
+echo "zshrc loaded in $elapsed_time seconds"
