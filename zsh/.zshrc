@@ -23,6 +23,12 @@ random_theme() {
     echo "zshift not found. Attempting to install..."
     if [ -d "$HOME/Code/configs/zshift" ]; then
       cd "$HOME/Code/configs/zshift" >/dev/null
+      echo "Cleaning Swift package..."
+      swift package clean
+      echo "Updating Swift package..."
+      swift package update
+      echo "Building zshift..."
+      swift build -c release
       swift package experimental-install 2>&1 || echo "Failed to install zshift"
       popd >/dev/null
     else
@@ -31,29 +37,52 @@ random_theme() {
     fi
   fi
 
-  # Run zshift and capture its output
-  zshift_output=$(zshift 2>&1)
-  if [ $? -ne 0 ]; then
-    echo "Error running zshift: $zshift_output"
+  # Call zshift to get a random theme and capture the output    local output
+  output=$(zshift random)
+  echo "$output"
+
+  # Extract the theme name from the last non-empty line
+  local theme_name
+  theme_name=$(echo "$output" | grep -v '^$' | tail -n 1 | sed 's/^ZSH_THEME=//')
+
+  if [[ -n "$theme_name" ]]; then
+    export ZSH_THEME="$theme_name"
+    return 0
+  else
+    echo "No theme name found in zshift output."
     return 1
   fi
-
-  # Evaluate zshift output in the current shell
-  eval "$zshift_output"
 
   # Check if ZSH_THEME was set
   if [ -z "$ZSH_THEME" ]; then
     echo "Error: ZSH_THEME not set by zshift"
     return 1
   fi
-
-  echo "ZSH theme set to: $ZSH_THEME"
-
-  # Source oh-my-zsh to apply the new theme
-  source $ZSH/oh-my-zsh.sh
 }
 
 random_theme
+
+like_theme() {
+  if [ $# -eq 0 ]; then
+    echo "Usage: like_theme <theme_name>"
+    return 1
+  fi
+
+  local theme_name="$1"
+  local theme_file="$ZSH/themes/${theme_name}.zsh-theme"
+
+  if [ ! -f "$theme_file" ]; then
+    echo "Theme $theme_name does not exist."
+    return 1
+  fi
+
+  # Call zshift to like the theme
+  zshift like "$theme_name"
+
+  if [ $? -eq 0 ]; then
+    echo "Liked theme: $theme_name"
+  fi
+}
 
 # update automatically without asking
 zstyle ':omz:update' mode auto
