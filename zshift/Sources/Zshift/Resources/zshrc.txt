@@ -37,7 +37,7 @@ random_theme() {
     fi
   fi
 
-  # Call zshift to get a random theme and capture the output    local output
+  # Call zshift to get a random theme and capture the local output
   output=$(zshift random)
   echo "$output"
 
