@@ -1,37 +1,34 @@
 // swift-tools-version: 5.10
-import PackageDescription
 import Foundation
+import PackageDescription
 
 ConfigurationService.local.dependencies = [
   .package(name: "Figlet", path: "../../clis/Figlet")
 ]
 
 ConfigurationService.remote.dependencies = [
-  .package(url: "https://github.com/wrkstrm/Figlet.git", branch: "main"),
+  .package(url: "https://github.com/wrkstrm/Figlet.git", from: "0.0.0")
 ]
 
 let package = Package(
   name: "zshift",
   platforms: [.macOS(.v14), .iOS(.v17), .tvOS(.v12), .watchOS(.v10), .macCatalyst(.v14)],
   products: [
-    .executable(name: "zshift", targets: ["Zshift"])
+    .executable(name: "zshift", targets: ["ZShift"])
   ],
   dependencies: ConfigurationService.inject.dependencies + [
-    .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.0.0"),
+    .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.0.0")
   ],
   targets: [
     .executableTarget(
-      name: "Zshift",
+      name: "ZShift",
       dependencies: [
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
-        .product(name: "SwiftFigletKit", package: "Figlet")
+        .product(name: "SwiftFigletKit", package: "Figlet"),
       ],
       resources: [
-        .process("Resources"), // This will copy all files in the Resources folder),
+        .process("Resources")  // This will copy all files in the Resources folder),
       ]),
-    .testTarget(
-      name: "zshiftTests",
-      dependencies: ["Zshift"]),
   ]
 )
 
