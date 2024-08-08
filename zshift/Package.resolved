@@ -1,6 +1,15 @@
 {
-  "originHash" : "fe41c9b3c48929b16b6e6e3fbc02c9265ef87fcf227caf163f1c517b3e3f8dd0",
+  "originHash" : "ffddf2f60209744622f8cdb9f9eb3fa63ba6de23c87eba44a11b4a34536dfad0",
   "pins" : [
+    {
+      "identity" : "figlet",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/wrkstrm/Figlet.git",
+      "state" : {
+        "revision" : "a2e391362334a474ade65aa08adacc2388f9d715",
+        "version" : "0.0.1"
+      }
+    },
     {
       "identity" : "swift-argument-parser",
       "kind" : "remoteSourceControl",
