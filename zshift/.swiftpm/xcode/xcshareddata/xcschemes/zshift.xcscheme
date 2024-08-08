@@ -64,7 +64,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = ""
+            argument = "link-zshrc --backup"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

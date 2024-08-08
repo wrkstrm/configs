@@ -19,7 +19,7 @@ let package = Package(
         .product(name: "Figlet", package: "example-package-figlet")
       ],
       resources: [
-        .copy("Resources"), // This will copy all files in the Resources folder),
+        .process("Resources"), // This will copy all files in the Resources folder),
       ]),
     .testTarget(
       name: "zshiftTests",
