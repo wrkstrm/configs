@@ -8,5 +8,15 @@
   "files.trimFinalNewlines": true,
   "files.trimTrailingWhitespace": true,
   "spellright.documentTypes": ["markdown"],
-  "spellright.language": ["en"]
+  "spellright.language": [
+    "en"
+  ],
+  "workbench.colorCustomizations": {
+    "activityBar.foreground": "#f6f6f6",
+    "iLoveWorkSpaceColors": true,
+    "iLoveWorkSpaceRandom": true,
+    "activityBar.background": "#093428",
+    "titleBar.activeBackground": "#0D4938",
+    "titleBar.activeForeground": "#F0FCF9"
+  }
 }
