@@ -1,15 +1,6 @@
 {
-  "originHash" : "cc04578e70cdc596e496db798c30a3cdb7b5754b279226b56ee88ab2f3da9a51",
+  "originHash" : "fe41c9b3c48929b16b6e6e3fbc02c9265ef87fcf227caf163f1c517b3e3f8dd0",
   "pins" : [
-    {
-      "identity" : "example-package-figlet",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/example-package-figlet.git",
-      "state" : {
-        "branch" : "main",
-        "revision" : "166eef46de0b094d6d1966e749f727d6c4beba0e"
-      }
-    },
     {
       "identity" : "swift-argument-parser",
       "kind" : "remoteSourceControl",

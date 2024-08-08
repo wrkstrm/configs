@@ -1,6 +1,6 @@
 import ArgumentParser
-import Figlet
 import Foundation
+import SwiftFigletKit
 
 @main
 struct ZShift: AsyncParsableCommand {
@@ -147,7 +147,11 @@ struct Random: AsyncParsableCommand {
 
   /// Print out the path to the selected theme in zsh-compatible format
   static func printSelectedTheme(_ theme: String) {
-    Figlet.say("ZShift - " + theme)
+    if let font = SFKFont.random() {
+      print(string: "ZShift - " + theme, usingFont: font)
+    } else {
+      print("ERROR: Unable to find Font file resource in bundle.")
+    }
     print("ZSH_THEME=\(theme)")
   }
 

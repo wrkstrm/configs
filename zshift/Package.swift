@@ -9,14 +9,14 @@ let package = Package(
   ],
   dependencies: [
     .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.0.0"),
-    .package(url: "https://github.com/apple/example-package-figlet.git", branch: "main")
+    .package(path: "../../clis/Figlet")
   ],
   targets: [
     .executableTarget(
       name: "Zshift",
       dependencies: [
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
-        .product(name: "Figlet", package: "example-package-figlet")
+        .product(name: "SwiftFigletKit", package: "Figlet")
       ],
       resources: [
         .process("Resources"), // This will copy all files in the Resources folder),
