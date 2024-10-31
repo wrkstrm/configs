@@ -102,7 +102,7 @@ struct ZShift: AsyncParsableCommand {
   }
 
   static func append(theme: String, to path: String) throws {
-    let expandedPath: String = ZShift.expandTilde(in: path)
+    let expandedPath: String = Self.expandTilde(in: path)
     let themeToAppend: String = theme + "\n"
 
     if let fileHandle = FileHandle(forWritingAtPath: expandedPath) {
