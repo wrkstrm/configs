@@ -40,3 +40,6 @@ tjkirch_mod
 wezm+
 essembeh
 apple
+gentoo
+muse
+humza
