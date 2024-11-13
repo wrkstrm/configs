@@ -28,8 +28,8 @@ random_theme() {
   # Check if zshift is installed and in PATH
   if ! command -v zshift &>/dev/null; then
     echo "zshift not found. Attempting to install..."
-    if [ -d "$HOME/Code/configs/zshift" ]; then
-      cd "$HOME/Code/configs/zshift" >/dev/null
+    if [ -d "$ZSHIFT_PATH" ]; then
+      pushd "$ZSHIFT_PATH" >/dev/null
       echo "Cleaning Swift package..."
       swift package clean
       echo "Updating Swift package..."
@@ -39,13 +39,18 @@ random_theme() {
       swift package experimental-install 2>&1 || echo "Failed to install zshift"
       popd >/dev/null
     else
-      echo "Error: zshift directory not found at $HOME/Code/configs/zshift"
+      echo "Error: zshift directory not found at $ZSHIFT_PATH"
       return 1
     fi
   fi
 
   # Call zshift to get a random theme and capture the local output
   output=$(zshift random)
+  if [ $? -ne 0 ]; then
+    echo "Error running zshift: $output"
+    return 1
+  fi
+
   echo "$output"
 
   # Extract the theme name from the last non-empty line
