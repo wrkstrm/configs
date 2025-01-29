@@ -16,13 +16,20 @@ source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 export ZSH="$HOME/.oh-my-zsh"
 source $ZSH/oh-my-zsh.sh
 
+# Customize history.
+HISTSIZE=10000
+SAVEHIST=10000
+HISTFILE=~/.zsh_history
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_FIND_NO_DUPS
+
 # Use the zshift package to select a random theme
 random_theme() {
   # Check if zshift is installed and in PATH
   if ! command -v zshift &>/dev/null; then
     echo "zshift not found. Attempting to install..."
-    if [ -d "$HOME/Code/configs/zshift" ]; then
-      cd "$HOME/Code/configs/zshift" >/dev/null
+    if [ -d "$ZSHIFT_PATH" ]; then
+      pushd "$ZSHIFT_PATH" >/dev/null
       echo "Cleaning Swift package..."
       swift package clean
       echo "Updating Swift package..."
@@ -32,13 +39,18 @@ random_theme() {
       swift package experimental-install 2>&1 || echo "Failed to install zshift"
       popd >/dev/null
     else
-      echo "Error: zshift directory not found at $HOME/Code/configs/zshift"
+      echo "Error: zshift directory not found at $ZSHIFT_PATH"
       return 1
     fi
   fi
 
   # Call zshift to get a random theme and capture the local output
   output=$(zshift random)
+  if [ $? -ne 0 ]; then
+    echo "Error running zshift: $output"
+    return 1
+  fi
+
   echo "$output"
 
   # Extract the theme name from the last non-empty line
@@ -110,7 +122,8 @@ zstyle ':omz:update' mode auto
 zstyle ':omz:update' frequency 1
 # Uncomment the following line to change how often to auto-update (in days).
 # Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
+CASE_SENSITIVE="true"
+
 # Uncomment the following line to use hyphen-insensitive completion.
 # Case-sensitive completion must be off. _ and - will be interchangeable.
 # HYPHEN_INSENSITIVE="true"
@@ -131,7 +144,7 @@ zstyle ':omz:update' frequency 1
 # You can also set it to another string to have that shown instead of the default red dots.
 # e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
 # Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
-# COMPLETION_WAITING_DOTS="true"
+COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
 # under VCS as dirty. This makes repository status check for large repositories

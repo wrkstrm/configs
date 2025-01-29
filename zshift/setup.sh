@@ -1,6 +1,5 @@
 #!/usr/bin/env zsh
 
-
 # Find the directory where this script is located
 SCRIPT_DIR="${0:a:h}"
 
