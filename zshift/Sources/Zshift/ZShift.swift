@@ -10,7 +10,7 @@ struct ZShift: AsyncParsableCommand {
     shouldDisplay: false,
     subcommands: [Random.self, Like.self, Exclude.self, LinkZshrc.self],
     defaultSubcommand: Random.self,
-    helpNames: .shortAndLong
+    helpNames: .shortAndLong,
   )
 
   /// Function to expand "~" in file paths
@@ -119,7 +119,7 @@ struct ZShift: AsyncParsableCommand {
 struct Random: AsyncParsableCommand {
   static var configuration = CommandConfiguration(
     abstract: "Like a zsh theme",
-    helpNames: .shortAndLong
+    helpNames: .shortAndLong,
   )
 
   /// Get the list of available themes and exclude the ones specified in the file
@@ -141,7 +141,8 @@ struct Random: AsyncParsableCommand {
   /// Randomly select a theme from the list of available ones
   static func getRandomTheme(from themes: [String]) -> String? {
     themes.randomElement()?.components(separatedBy: "/").last?.replacingOccurrences(
-      of: ".zsh-theme", with: "")
+      of: ".zsh-theme", with: "",
+    )
   }
 
   /// Print out the path to the selected theme in zsh-compatible format
@@ -157,7 +158,7 @@ struct Random: AsyncParsableCommand {
   /// Read input
   static func readInput() -> String {
     print(
-      "Enter the path to your bad themes file (e.g., ~/excluded_zsh_themes.txt): ", terminator: ""
+      "Enter the path to your bad themes file (e.g., ~/excluded_zsh_themes.txt): ", terminator: "",
     )
     guard let excludedThemesPath = readLine() else {
       fatalError("Failed to read file path")
@@ -194,7 +195,7 @@ struct Random: AsyncParsableCommand {
 
 struct Like: AsyncParsableCommand {
   static var configuration = CommandConfiguration(
-    abstract: "Like a zsh theme", helpNames: .shortAndLong
+    abstract: "Like a zsh theme", helpNames: .shortAndLong,
   )
 
   @Argument(help: "The theme to like.")
@@ -203,7 +204,7 @@ struct Like: AsyncParsableCommand {
   /// Read input
   static func readInput() -> String {
     print(
-      "Enter the path to your bad themes file (e.g., ~/excluded_zsh_themes.txt): ", terminator: ""
+      "Enter the path to your bad themes file (e.g., ~/excluded_zsh_themes.txt): ", terminator: "",
     )
     guard let excludedThemesPath = readLine() else {
       fatalError("Failed to read file path")
@@ -233,7 +234,7 @@ struct Like: AsyncParsableCommand {
 
 struct Exclude: AsyncParsableCommand {
   static var configuration = CommandConfiguration(
-    abstract: "Exclude a zsh theme", helpNames: .shortAndLong
+    abstract: "Exclude a zsh theme", helpNames: .shortAndLong,
   )
 
   @Argument(help: "The theme to exclude.")
@@ -262,7 +263,7 @@ struct Exclude: AsyncParsableCommand {
 struct LinkZshrc: AsyncParsableCommand {
   static var configuration = CommandConfiguration(
     commandName: "link-zshrc",
-    abstract: "A utility to manage zsh configuration."
+    abstract: "A utility to manage zsh configuration.",
   )
 
   @Option(name: .long, help: "Path to a custom .zshrc file to use instead of the bundled one.")
@@ -300,7 +301,7 @@ struct LinkZshrc: AsyncParsableCommand {
         // Write the contents to the user's .zshrc file
         try FileManager.default.createSymbolicLink(
           at: userZshrcPath,
-          withDestinationURL: sharedZshrcPath
+          withDestinationURL: sharedZshrcPath,
         )
         print("DEBUG: Found zshrc.txt at: \(sharedZshrcPath.path)")
         zshrcContents = try String(contentsOf: sharedZshrcPath)
@@ -310,7 +311,7 @@ struct LinkZshrc: AsyncParsableCommand {
       print("DEBUG: Current working directory: \(FileManager.default.currentDirectoryPath)")
       print("DEBUG: Bundle.module.bundleURL: \(Bundle.module.bundleURL)")
       print(
-        "DEBUG: Bundle.module.resourceURL: \(Bundle.module.resourceURL ?? URL(fileURLWithPath: ""))"
+        "DEBUG: Bundle.module.resourceURL: \(Bundle.module.resourceURL ?? URL(fileURLWithPath: ""))",
       )
       throw ExitCode.failure
     }
