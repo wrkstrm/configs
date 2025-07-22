@@ -141,7 +141,8 @@ struct Random: AsyncParsableCommand {
   /// Randomly select a theme from the list of available ones
   static func getRandomTheme(from themes: [String]) -> String? {
     themes.randomElement()?.components(separatedBy: "/").last?.replacingOccurrences(
-      of: ".zsh-theme", with: "")
+      of: ".zsh-theme", with: "",
+    )
   }
 
   /// Print out the path to the selected theme in zsh-compatible format
