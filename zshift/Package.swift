@@ -29,9 +29,9 @@ let package = Package(
       ],
       resources: [
         .process("Resources")  // This will copy all files in the Resources folder),
-      ]
+      ],
     )
-  ]
+  ],
 )
 
 // MARK: - Configuration Service
