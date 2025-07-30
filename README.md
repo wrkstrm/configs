@@ -42,7 +42,7 @@ This environment variable controls dependency resolution behavior:
 - `true`: Uses local dependencies for development
 - `false`: Uses remote dependencies (useful for CI environments)
 
-### Verification
+### Verify Your Tools
 
 Verify your installations:
 ```bash
@@ -58,7 +58,7 @@ swiftlint version
 
 
 
-## Verification
+### Verify Environment Variable
 
 After adding the variable to your `.zprofile`, verify your setup:
 
@@ -110,3 +110,15 @@ If the variable isn't being set:
    ```bash
    echo $SPM_CI_USE_LOCAL_DEPS
    ```
+
+## Setting up zshift
+
+`zshift` is a small Swift utility that links your `.zshrc` to the shared configuration in this repository.
+To run the setup script:
+
+```bash
+cd zshift
+./setup.sh
+```
+
+After running the script, a new `.zshrc` symlink will be created and your configuration reloaded.
