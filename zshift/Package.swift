@@ -12,13 +12,13 @@ ConfigurationService.remote.dependencies = [
 
 let package = Package(
   name: "zshift",
-  platforms: [.macOS(.v14), .iOS(.v17), .tvOS(.v12), .watchOS(.v10), .macCatalyst(.v14)],
+  platforms: [.macOS(.v15), .iOS(.v17), .tvOS(.v12), .watchOS(.v10), .macCatalyst(.v14)],
   products: [
     // Case sensitivy git error requires a lowercase `S`.
     .executable(name: "zshift", targets: ["Zshift"])
   ],
   dependencies: ConfigurationService.inject.dependencies + [
-    .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.5.0")
+    .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.6.0")
   ],
   targets: [
     .executableTarget(

@@ -117,7 +117,7 @@ struct ZShift: AsyncParsableCommand {
 }
 
 struct Random: AsyncParsableCommand {
-  static var configuration = CommandConfiguration(
+  static let configuration = CommandConfiguration(
     abstract: "Like a zsh theme",
     helpNames: .shortAndLong,
   )
@@ -194,7 +194,7 @@ struct Random: AsyncParsableCommand {
 }
 
 struct Like: AsyncParsableCommand {
-  static var configuration = CommandConfiguration(
+  static let configuration = CommandConfiguration(
     abstract: "Like a zsh theme", helpNames: .shortAndLong,
   )
 
@@ -233,7 +233,7 @@ struct Like: AsyncParsableCommand {
 }
 
 struct Exclude: AsyncParsableCommand {
-  static var configuration = CommandConfiguration(
+  static let configuration = CommandConfiguration(
     abstract: "Exclude a zsh theme", helpNames: .shortAndLong,
   )
 
@@ -261,7 +261,7 @@ struct Exclude: AsyncParsableCommand {
 }
 
 struct LinkZshrc: AsyncParsableCommand {
-  static var configuration = CommandConfiguration(
+  static let configuration = CommandConfiguration(
     commandName: "link-zshrc",
     abstract: "A utility to manage zsh configuration.",
   )
