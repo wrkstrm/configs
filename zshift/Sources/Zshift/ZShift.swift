@@ -175,8 +175,8 @@ struct Random: AsyncParsableCommand {
       excludedThemesPath = ZShift.defaultExcludedFile
     }
 
-    // Load excluded themes.
-    let likedThemes: [String] = ZShift.loadExcludedThemes(from: ZShift.defaultLikedFile)
+    // Load liked themes.
+    let likedThemes: [String] = ZShift.loadLikedThemes(from: ZShift.defaultLikedFile)
     // Load liked themes.
     let excludedThemes: [String] = ZShift.loadExcludedThemes(from: excludedThemesPath)
     // Filter out the seen themes.
@@ -242,7 +242,7 @@ struct Exclude: AsyncParsableCommand {
 
   mutating func run() async throws {
     // Load excluded themes.
-    let excludedThemes = ZShift.loadExcludedThemes(from: ZShift.defaultLikedFile)
+    let excludedThemes = ZShift.loadExcludedThemes(from: ZShift.defaultExcludedFile)
 
     // Check if the theme is already liked
     guard !excludedThemes.contains(excludeTheme) else {
