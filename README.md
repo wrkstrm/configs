@@ -35,7 +35,7 @@ This guide explains the required environment variables for working with wrkstrm 
       ```bash
       # Package Steward Configuration
       # Controls whether to use local dependencies (true) or remote dependencies (false)
-      export SPM_CI_USE_LOCAL_DEPS=true
+      export SPM_USE_LOCAL_DEPS=true
       ```
 
 This environment variable controls dependency resolution behavior:
@@ -64,7 +64,7 @@ After adding the variable to your `.zprofile`, verify your setup:
 
 ```bash
 source ~/.zprofile
-echo $SPM_CI_USE_LOCAL_DEPS
+echo $SPM_USE_LOCAL_DEPS
 ```
 
 This should output: `true`
@@ -108,7 +108,7 @@ If the variable isn't being set:
 
 3. Verify the variable after opening a new terminal:
    ```bash
-   echo $SPM_CI_USE_LOCAL_DEPS
+   echo $SPM_USE_LOCAL_DEPS
    ```
 
 ## Setting up zshift
