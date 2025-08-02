@@ -291,14 +291,13 @@ struct LinkZshrc: AsyncParsableCommand {
       let backupPath = userZshrcPath.appendingPathExtension("backup")
       try FileManager.default.copyItem(at: userZshrcPath, to: backupPath)
       print("INFO: Existing .zshrc backed up to \(backupPath.path)")
-      try FileManager.default.removeItem(at: userZshrcPath)
     }
-
     let zshrcContents: String
     do {
       if let customPath = customZshrcPath {
-        print("DEBUG: Using custom .zshrc at: \(customPath)")
-        zshrcContents = try String(contentsOfFile: customPath)
+        let expandedPath = ZShift.expandTilde(in: customPath)
+        print("DEBUG: Using custom .zshrc at: \(expandedPath)")
+        zshrcContents = try String(contentsOfFile: expandedPath, encoding: .utf8)
       } else {
         print("DEBUG: Attempting to load .zshrc from bundle")
         guard let sharedZshrcPath = Bundle.module.url(forResource: "zshrc", withExtension: "txt")
@@ -306,13 +305,8 @@ struct LinkZshrc: AsyncParsableCommand {
           print("ERROR: Unable to find zshrc.txt resource in bundle.")
           throw ExitCode.failure
         }
-        // Write the contents to the user's .zshrc file
-        try FileManager.default.createSymbolicLink(
-          at: userZshrcPath,
-          withDestinationURL: sharedZshrcPath,
-        )
+        zshrcContents = try String(contentsOf: sharedZshrcPath, encoding: .utf8)
         print("DEBUG: Found zshrc.txt at: \(sharedZshrcPath.path)")
-        zshrcContents = try String(contentsOf: sharedZshrcPath)
       }
     } catch {
       print("ERROR: Failed to load .zshrc: \(error)")
@@ -324,7 +318,23 @@ struct LinkZshrc: AsyncParsableCommand {
       throw ExitCode.failure
     }
 
-    //    try zshrcContents.write(to: userZshrcPath, atomically: true, encoding: .utf8)
-    print("SUCCESS: .zshrc file has been updated.")
+    let marker = "# >>> zshift config >>>"
+    let endMarker = "# <<< zshift config <<<"
+    let contentsToAppend = "\n\(marker)\n\(zshrcContents)\n\(endMarker)\n"
+
+    if let existing = try? String(contentsOf: userZshrcPath, encoding: .utf8), existing.contains(marker) {
+      print("INFO: .zshrc already contains zshift config; skipping append.")
+    } else {
+      if FileManager.default.fileExists(atPath: userZshrcPath.path),
+        let fileHandle = FileHandle(forWritingAtPath: userZshrcPath.path)
+      {
+        fileHandle.seekToEndOfFile()
+        fileHandle.write(contentsToAppend.data(using: .utf8)!)
+        fileHandle.closeFile()
+      } else {
+        try contentsToAppend.write(to: userZshrcPath, atomically: true, encoding: .utf8)
+      }
+      print("SUCCESS: .zshrc file has been updated.")
+    }
   }
 }
