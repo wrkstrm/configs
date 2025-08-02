@@ -28,12 +28,20 @@ struct ZShift: AsyncParsableCommand {
   static let themesDir = "~/.oh-my-zsh/themes/"
 
   /// Default directory while Bundle loading is fixed.
-  static let defaultExcludedFile =
-    "~/Code/configs/zshift/Sources/zshift/Resources/excluded_zsh_themes.txt"
+  static let defaultExcludedFile: String = {
+    let fileURL = URL(fileURLWithPath: #file)
+      .deletingLastPathComponent()
+      .appendingPathComponent("Resources/excluded_zsh_themes.txt")
+    return fileURL.path
+  }()
 
   /// Default liked file while Bundle loading is fixed.
-  static let defaultLikedFile =
-    "~/Code/configs/zshift/Sources/zshift/Resources/liked_zsh_themes.txt"
+  static let defaultLikedFile: String = {
+    let fileURL = URL(fileURLWithPath: #file)
+      .deletingLastPathComponent()
+      .appendingPathComponent("Resources/liked_zsh_themes.txt")
+    return fileURL.path
+  }()
 
   /// Load excluded themes from file, falling back to default resource if necessary
   /// NOTE: An fatal error if the file cannot be read.
