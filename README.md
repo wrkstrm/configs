@@ -28,7 +28,25 @@ This guide explains the required environment variables for working with wrkstrm 
    brew install swift-format
    ```
 
-3. **Environment Setup**
+3. **GitHub Local Runner**
+
+   Install GitHub's local runner to execute workflows on your machine. For additional configuration options, see [GitHub's self-hosted runner documentation](https://docs.github.com/actions/hosting-your-own-runners/about-self-hosted-runners):
+
+   ```bash
+   mkdir actions-runner && cd actions-runner
+   curl -o actions-runner-osx-arm64.tar.gz -L https://github.com/actions/runner/releases/latest/download/actions-runner-osx-arm64.tar.gz
+   tar xzf actions-runner-osx-arm64.tar.gz
+   ./config.sh --url https://github.com/YOUR_ORG/YOUR_REPO --token YOUR_TOKEN
+   ./run.sh
+   ```
+
+   After starting the runner, confirm it shows as `online` in your repository's **Settings > Actions > Runners** page. You can verify the installation at any time:
+
+   ```bash
+   ./run.sh --version
+   ```
+
+4. **Environment Setup**
 
     Add the following to your `~/.zprofile`:
 
@@ -54,6 +72,9 @@ fastlane --version
 
 # Check SwiftLint
 swiftlint version
+
+# Check GitHub Local Runner (run from the actions-runner directory)
+./run.sh --version
 ```
 
 
