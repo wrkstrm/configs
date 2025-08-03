@@ -14,14 +14,15 @@ let package = Package(
   name: "zshift",
   platforms: [.macOS(.v15), .iOS(.v17), .tvOS(.v12), .watchOS(.v10), .macCatalyst(.v14)],
   products: [
-    .executable(name: "zshift", targets: ["ZShift"])
+    // Case sensitivy git error requires a lowercase `S`.
+    .executable(name: "zshift", targets: ["Zshift"])
   ],
   dependencies: ConfigurationService.inject.dependencies + [
     .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.6.0")
   ],
   targets: [
     .executableTarget(
-      name: "ZShift",
+      name: "Zshift",
       dependencies: [
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
         .product(name: "SwiftFigletKit", package: "Figlet"),
