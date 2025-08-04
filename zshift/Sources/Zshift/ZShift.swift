@@ -322,7 +322,9 @@ struct LinkZshrc: AsyncParsableCommand {
     let endMarker = "# <<< zshift config <<<"
     let contentsToAppend = "\n\(marker)\n\(zshrcContents)\n\(endMarker)\n"
 
-    if let existing = try? String(contentsOf: userZshrcPath, encoding: .utf8), existing.contains(marker) {
+    if let existing = try? String(contentsOf: userZshrcPath, encoding: .utf8),
+      existing.contains(marker)
+    {
       print("INFO: .zshrc already contains zshift config; skipping append.")
     } else {
       if FileManager.default.fileExists(atPath: userZshrcPath.path),
