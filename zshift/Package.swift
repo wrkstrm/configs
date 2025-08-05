@@ -3,11 +3,11 @@ import Foundation
 import PackageDescription
 
 ConfigurationService.local.dependencies = [
-  .package(name: "Figlet", path: "../../clis/Figlet")
+  .package(name: "SwiftFigletKit", path: "../../clis/SwiftFigletKit")
 ]
 
 ConfigurationService.remote.dependencies = [
-  .package(url: "https://github.com/wrkstrm/Figlet.git", from: "0.0.0")
+  .package(url: "https://github.com/wrkstrm/SwiftFigletKit.git", from: "0.0.0")
 ]
 
 let package = Package(
@@ -25,7 +25,7 @@ let package = Package(
       name: "Zshift",
       dependencies: [
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
-        .product(name: "SwiftFigletKit", package: "Figlet"),
+        .product(name: "SwiftFigletKit", package: "SwiftFigletKit"),
       ],
       resources: [
         .process("Resources")  // This will copy all files in the Resources folder),
