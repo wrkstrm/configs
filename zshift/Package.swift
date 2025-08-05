@@ -20,23 +20,23 @@ let package = Package(
   dependencies: ConfigurationService.inject.dependencies + [
     .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.6.0")
   ],
-    targets: [
-      .executableTarget(
-        name: "Zshift",
-        dependencies: [
-          .product(name: "ArgumentParser", package: "swift-argument-parser"),
-          .product(name: "SwiftFigletKit", package: "Figlet"),
-        ],
-        resources: [
-          .process("Resources")  // This will copy all files in the Resources folder),
-        ]
-      ),
-      .testTarget(
-        name: "ZshiftTests",
-        dependencies: ["Zshift"]
-      )
-    ],
-  )
+  targets: [
+    .executableTarget(
+      name: "Zshift",
+      dependencies: [
+        .product(name: "ArgumentParser", package: "swift-argument-parser"),
+        .product(name: "SwiftFigletKit", package: "Figlet"),
+      ],
+      resources: [
+        .process("Resources")  // This will copy all files in the Resources folder),
+      ]
+    ),
+    .testTarget(
+      name: "ZshiftTests",
+      dependencies: ["Zshift"]
+    ),
+  ],
+)
 
 // MARK: - Configuration Service
 

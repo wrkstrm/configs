@@ -1,4 +1,5 @@
 import XCTest
+
 @testable import Zshift
 
 final class ZShiftTests: XCTestCase {
