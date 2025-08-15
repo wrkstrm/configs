@@ -49,7 +49,7 @@ public struct ConfigurationService {
 
   public static let inject: ConfigurationService = ProcessInfo.useLocalDeps ? .local : .remote
 
-  static var local: ConfigurationService = .init(swiftSettings: [.localSwiftSettings])
+  static var local: ConfigurationService = .init(swiftSettings: [.local])
 
   static var remote: ConfigurationService = .init()
 }
@@ -57,7 +57,7 @@ public struct ConfigurationService {
 // MARK: - PackageDescription extensions
 
 extension SwiftSetting {
-  public static let localSwiftSettings: SwiftSetting = .unsafeFlags([
+  public static let local: SwiftSetting = .unsafeFlags([
     "-Xfrontend",
     "-warn-long-expression-type-checking=10",
   ])
