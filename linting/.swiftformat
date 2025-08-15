@@ -40,7 +40,7 @@
 --trimwhitespace always
 --wraparguments before-first
 --wrapcollections before-first
---wrapparameters preserve
+--wrapparameters afterfirst
 --xcodeindentation disabled
 
 --header
