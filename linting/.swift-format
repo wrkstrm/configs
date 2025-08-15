@@ -2,7 +2,7 @@
   "fileScopedDeclarationPrivacy" : {
     "accessLevel" : "private"
   },
-  "indentConditionalCompilationBlocks" : false,           // Google uses default indentation inside #if
+  "indentConditionalCompilationBlocks" : false,
   "indentSwitchCaseLabels" : false,
   "indentation" : {
     "spaces" : 2
@@ -38,9 +38,9 @@
     "FullyIndirectEnum" : true,
     "GroupNumericLiterals" : true,
     "IdentifiersMustBeASCII" : true,
-    "NeverForceUnwrap" : true,                                 // Google strongly discourages force unwraps
+    "NeverForceUnwrap" : true,
     "NeverUseForceTry" : false,
-    "NeverUseImplicitlyUnwrappedOptionals" : true,             // Follow Google's avoid IUOs
+    "NeverUseImplicitlyUnwrappedOptionals" : true,
     "NoAccessLevelOnExtensionDeclaration" : true,
     "NoAssignmentInExpressions" : true,
     "NoBlockComments" : true,
@@ -60,18 +60,18 @@
     "ReplaceForEachWithForLoop" : true,
     "ReturnVoidInsteadOfEmptyTuple" : true,
     "TypeNamesShouldBeCapitalized" : true,
-    "UseEarlyExits" : true,                                    // Google encourages guard/early exits
+    "UseEarlyExits" : true,
     "UseExplicitNilCheckInConditions" : true,
     "UseLetInEveryBoundCaseVariable" : true,
     "UseShorthandTypeNames" : true,
     "UseSingleLinePropertyGetter" : true,
     "UseSynthesizedInitializer" : true,
     "UseTripleSlashForDocumentationComments" : true,
-    "UseWhereClausesInForLoops" : true,                         // Google prefers for-where loops
+    "UseWhereClausesInForLoops" : true,
     "ValidateDocumentationComments" : false
   },
   "spacesAroundRangeFormationOperators" : false,
-  "spacesBeforeEndOfLineComments" : 2,                          // Keep at 2
+  "spacesBeforeEndOfLineComments" : 2,
   "tabWidth" : 8,
   "version" : 1
 }
