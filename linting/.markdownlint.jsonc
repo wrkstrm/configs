@@ -1,0 +1,10 @@
+{
+  "default": true,
+  "MD001": false,                       // heading increment
+  "MD004": { "style": "dash" },         // unordered list marker
+  "MD012": { "maximum": 2 },            // consecutive blank lines
+  "MD013": { "line_length": 100 },
+  "MD024": { "siblings_only": true },   // no duplicate headings at same level
+  "MD033": false,                       // allow inline HTML
+  "MD041": false                        // first line heading not required
+}
