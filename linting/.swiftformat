@@ -44,3 +44,4 @@
 --xcodeindentation disabled
 
 --header
+--exclude .build,.build/checkouts,build,DerivedData,Pods,Carthage

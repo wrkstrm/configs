@@ -1,16 +1,20 @@
 # Environment Setup Guide
 
-This guide explains the required environment variables for working with wrkstrm packages and tools. This guide is specifically for M class Macs.
+This guide explains the required environment variables for working with wrkstrm packages and tools.
+This guide is specifically for M class Macs.
 
 ## Installation
 
 ### Prerequisites
 
 1. **Homebrew**
+
    ```bash
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
    ```
+
    After installation, make sure Homebrew is in your PATH:
+
    ```bash
    eval "$(/opt/homebrew/bin/brew shellenv)"
    ```
@@ -18,6 +22,7 @@ This guide explains the required environment variables for working with wrkstrm 
 2. **Development Tools**
 
    Install required development tools using Homebrew:
+
    ```bash
    # Install Fastlane for iOS automation and localization
    brew install fastlane
@@ -36,7 +41,9 @@ This guide explains the required environment variables for working with wrkstrm 
 
 3. **GitHub Local Runner**
 
-   Install GitHub's local runner to execute workflows on your machine. For additional configuration options, see [GitHub's self-hosted runner documentation](https://docs.github.com/actions/hosting-your-own-runners/about-self-hosted-runners):
+   Install GitHub's local runner to execute workflows on your machine. For additional configuration
+   options, see
+   [GitHub's self-hosted runner documentation](https://docs.github.com/actions/hosting-your-own-runners/about-self-hosted-runners):
 
    ```bash
    mkdir actions-runner && cd actions-runner
@@ -46,7 +53,8 @@ This guide explains the required environment variables for working with wrkstrm 
    ./run.sh
    ```
 
-   After starting the runner, confirm it shows as `online` in your repository's **Settings > Actions > Runners** page. You can verify the installation at any time:
+   After starting the runner, confirm it shows as `online` in your repository's **Settings >
+   Actions > Runners** page. You can verify the installation at any time:
 
    ```bash
    ./run.sh --version
@@ -54,15 +62,16 @@ This guide explains the required environment variables for working with wrkstrm 
 
 4. **Environment Setup**
 
-    Add the following to your `~/.zprofile`:
+   Add the following to your `~/.zprofile`:
 
-      ```bash
-      # Package Steward Configuration
-      # Controls whether to use local dependencies (true) or remote dependencies (false)
-      export SPM_USE_LOCAL_DEPS=true
-      ```
+   ```bash
+   # Package Steward Configuration
+   # Controls whether to use local dependencies (true) or remote dependencies (false)
+   export SPM_USE_LOCAL_DEPS=true
+   ```
 
 This environment variable controls dependency resolution behavior:
+
 - `true`: Uses local dependencies for development
 - `false`: Uses remote dependencies (useful for CI environments)
 
@@ -81,6 +90,7 @@ This environment variable controls dependency resolution behavior:
 ### Verify Your Tools
 
 Verify your installations:
+
 ```bash
 # Check Homebrew
 brew --version
@@ -97,8 +107,6 @@ markdownlint-cli2 --version
 # Check GitHub Local Runner (run from the actions-runner directory)
 ./run.sh --version
 ```
-
-
 
 ### Verify Environment Variable
 
@@ -126,16 +134,19 @@ markdownlint-cli2 --config linting/.markdownlint.jsonc "**/*.md"
 If you encounter any issues:
 
 1. Update Homebrew and all packages:
+
    ```bash
    brew update && brew upgrade
    ```
 
 2. Check for any Homebrew problems:
+
    ```bash
    brew doctor
    ```
 
 3. Ensure Homebrew's binary location is in your PATH:
+
    ```bash
    echo $PATH | grep brew
    ```
@@ -145,6 +156,7 @@ If you encounter any issues:
 If the variable isn't being set:
 
 1. Ensure your `.zprofile` is being sourced by adding to `.zshrc`:
+
    ```bash
    if [ -f "$HOME/.zprofile" ]; then
        source "$HOME/.zprofile"
@@ -152,19 +164,21 @@ If the variable isn't being set:
    ```
 
 2. Check file permissions:
+
    ```bash
    chmod 600 ~/.zprofile
    ```
 
 3. Verify the variable after opening a new terminal:
+
    ```bash
    echo $SPM_USE_LOCAL_DEPS
    ```
 
 ## Setting up zshift
 
-`zshift` is a small Swift utility that links your `.zshrc` to the shared configuration in this repository.
-To run the setup script:
+`zshift` is a small Swift utility that links your `.zshrc` to the shared configuration in this
+repository. To run the setup script:
 
 ```bash
 cd zshift
