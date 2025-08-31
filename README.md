@@ -28,6 +28,12 @@ This guide explains the required environment variables for working with wrkstrm 
    brew install swift-format
    ```
 
+   Install `markdownlint-cli2` globally with npm for Markdown linting:
+
+   ```bash
+   npm install -g markdownlint-cli2
+   ```
+
 3. **GitHub Local Runner**
 
    Install GitHub's local runner to execute workflows on your machine. For additional configuration options, see [GitHub's self-hosted runner documentation](https://docs.github.com/actions/hosting-your-own-runners/about-self-hosted-runners):
@@ -85,6 +91,9 @@ fastlane --version
 # Check SwiftLint
 swiftlint version
 
+# Check markdownlint
+markdownlint-cli2 --version
+
 # Check GitHub Local Runner (run from the actions-runner directory)
 ./run.sh --version
 ```
@@ -101,6 +110,14 @@ echo $SPM_USE_LOCAL_DEPS
 ```
 
 This should output: `true`
+
+### Run Markdownlint
+
+Use `markdownlint-cli2` with the repository's configuration to lint Markdown files:
+
+```bash
+markdownlint-cli2 --config linting/.markdownlint.jsonc "**/*.md"
+```
 
 ## Troubleshooting
 
