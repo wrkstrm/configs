@@ -175,6 +175,26 @@ If the variable isn't being set:
    echo $SPM_USE_LOCAL_DEPS
    ```
 
+## Zsh setup (recommended)
+
+Use the top‑level setup helper to create or update your `~/.zshrc`. It prefers the Swift CLI (zshift)
+and installs common Zsh extras by default.
+
+```bash
+bash tools/scripts/setup-zsh.sh -y
+```
+
+Flags:
+
+- `--install-plugins`: install fzf, zsh‑autosuggestions, zsh‑syntax‑highlighting via Homebrew (default)
+- `--no-install-plugins`: skip installing optional plugins
+- `--link-only`: only link `~/.zshrc` using zshift (no installs)
+- `--no-backup`: skip backup of existing `~/.zshrc`
+- `-y/--yes`: non‑interactive mode
+
+If Swift is unavailable, the script falls back to writing the bundled template
+(`zshift/Sources/Zshift/Resources/zshrc.txt`) into `~/.zshrc` with clear markers.
+
 ## Setting up zshift
 
 `zshift` is a small Swift utility that links your `.zshrc` to the shared configuration in this
