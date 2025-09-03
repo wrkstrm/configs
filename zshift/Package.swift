@@ -3,11 +3,11 @@ import Foundation
 import PackageDescription
 
 ConfigurationService.local.dependencies = [
-  .package(name: "SwiftFigletKit", path: "../../clis/SwiftFigletKit")
+  .package(name: "SwiftFigletKit", path: "../../universal/SwiftFigletKit")
 ]
 
 ConfigurationService.remote.dependencies = [
-  .package(url: "https://github.com/wrkstrm/SwiftFigletKit.git", from: "0.0.0")
+  .package(url: "https://github.com/wrkstrm/SwiftFigletKit.git", from: "1.0.0")
 ]
 
 let package = Package(
