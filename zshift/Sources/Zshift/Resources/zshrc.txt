@@ -1,4 +1,5 @@
 zmodload zsh/datetime
+
 # Record the start time
 start_time=$EPOCHREALTIME
 

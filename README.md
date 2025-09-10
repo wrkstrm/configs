@@ -78,7 +78,6 @@ This environment variable controls dependency resolution behavior:
 5. **Repo‑local CLI bin (recommended)**
 
    Keep installed CLI tools scoped to this repo by using a local, gitignored bin:
-
    - Installer: `bash .wrkstrm/clia/bin/swift/install-cli-tools.sh`
    - Binaries land in: `.wrkstrm/clia/bin/swift/`
    - Optional PATH: `export PATH="$(pwd)/.wrkstrm/clia/bin/swift:$PATH"`
