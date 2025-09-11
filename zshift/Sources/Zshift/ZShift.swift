@@ -44,7 +44,7 @@ struct ZShift: AsyncParsableCommand {
   }()
 
   /// Load excluded themes from file, falling back to default resource if necessary
-  /// NOTE: An fatal error if the file cannot be read.
+  /// NOTE: A fatal error if the file cannot be read.
   /// - Parameter path The path to the file containing the list of excluded themes.
   static func loadExcludedThemes(from path: String? = nil) -> [String] {
     let contents: String
@@ -126,7 +126,7 @@ struct ZShift: AsyncParsableCommand {
 
 struct Random: AsyncParsableCommand {
   static let configuration = CommandConfiguration(
-    abstract: "Like a zsh theme",
+    abstract: "Load a zsh theme",
     helpNames: .shortAndLong,
   )
 
@@ -156,11 +156,12 @@ struct Random: AsyncParsableCommand {
   /// Print out the path to the selected theme in zsh-compatible format
   static func printSelectedTheme(_ theme: String) {
     if let font = SFKFont.random() {
-      print(string: "ZShift - " + theme, usingFont: font)
+      print(string: "ZShift x " + theme, usingFont: font)
     } else {
       print("ERROR: Unable to find Font file resource in bundle.")
     }
-    print("ZSH_THEME=\(theme)")
+    // Print the theme name plainly for easy copy/paste
+    print(theme)
   }
 
   /// Read input
@@ -268,6 +269,7 @@ struct Exclude: AsyncParsableCommand {
   }
 }
 
+#if os(macOS) || os(Linux)
 struct LinkZshrc: AsyncParsableCommand {
   static let configuration = CommandConfiguration(
     commandName: "link-zshrc",
@@ -340,3 +342,4 @@ struct LinkZshrc: AsyncParsableCommand {
     }
   }
 }
+#endif // os(macOS) || os(Linux)

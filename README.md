@@ -128,6 +128,12 @@ markdownlint-cli2 --config linting/.markdownlint.jsonc "**/*.md"
 
 ## Troubleshooting
 
+### Swift toolchains (Swiftly)
+
+- Use the Xcode Default toolchain for Apple SDK builds. A mismatched compiler/SDK (e.g., Swift 6.1.x compiler vs Xcode 26 SDK built with Swift 6.2) will fail with Darwin module errors.
+- If `swiftly toolchain list` does not include your current Xcode toolchain, do not force Swiftly; remove the pinned entry (e.g., `swiftly toolchain remove swift-6.1.2-RELEASE`) and rely on Xcode Default.
+- Sanity checks: `xcodebuild -version`, `xcrun swift --version`, and ensure `SWIFT_EXEC`/`TOOLCHAINS` are unset.
+
 ### **brew issues**
 
 If you encounter any issues:
