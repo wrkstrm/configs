@@ -1,4 +1,6 @@
 emulate -L zsh
+# Team zsh template with fast/human split.
+# See .wrkstrm/clia/swift_test_engineer_AGENCY.md (2025-09-11) for policy.
 zmodload zsh/datetime
 
 # Record the start time (human shells will show load time)
