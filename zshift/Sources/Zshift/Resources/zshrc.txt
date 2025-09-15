@@ -20,7 +20,7 @@ start_time=$EPOCHREALTIME
 [[ -d "$HOME/.cache/lm-studio/bin" ]] && PATH="$PATH:$HOME/.cache/lm-studio/bin"
 export PATH
 
-:# Color is handled by OMZ themes; no extra color env/aliases.
+# Color is handled by OMZ themes; no extra color env/aliases.
 
 # History (conservative; human layer can extend)
 export HISTSIZE=${HISTSIZE:-10000}
@@ -48,8 +48,25 @@ fi
 # 2) HUMAN (NON‑INTERACTIVE) LAYERS
 ####################################
 
-# OMZ plugin list kept lean (loaded only in interactive step)
+# OMZ plugin list (base + optional if present). Loaded only in interactive step.
+ZSH_CUSTOM=${ZSH_CUSTOM:-$ZSH/custom}
+_has_plugin() { [[ -d "$ZSH/plugins/$1" || -d "$ZSH_CUSTOM/plugins/$1" ]]; }
+
+# Base plugins
 plugins=(git history-substring-search)
+
+# Optional plugins
+typeset -a _omz_extras=()
+# Autosuggestions if installed under OMZ custom
+if _has_plugin zsh-autosuggestions; then _omz_extras+=(zsh-autosuggestions); fi
+# Xcode on macOS when OMZ plugin exists
+if [[ "$OSTYPE" == darwin* ]] && _has_plugin xcode; then _omz_extras+=(xcode); fi
+# VS Code when plugin exists and `code` is available
+if _has_plugin vscode && command -v code >/dev/null 2>&1; then _omz_extras+=(vscode); fi
+
+# Compose final list ensuring zsh-syntax-highlighting remains last when present
+plugins=(${plugins[@]} ${_omz_extras[@]})
+if _has_plugin zsh-syntax-highlighting; then plugins+=(zsh-syntax-highlighting); fi
 
 # OMZ update cadence and general tuning
 zstyle ':omz:update' mode auto

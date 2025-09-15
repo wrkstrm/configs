@@ -211,3 +211,146 @@ cd zshift
 ```
 
 After running the script, a new `.zshrc` symlink will be created and your configuration reloaded.
+
+### Zshift configuration
+
+zshift resolves configuration from flags, environment variables, user config files, and bundled
+team defaults with a clear precedence. This removes hard‑coded lists and keeps behavior
+predictable across hosts.
+
+#### Precedence (highest to lowest)
+
+1. CLI flags (`--excluded-path`, `--liked-path`, `--themes-dir`)
+2. Environment variables (`ZSHIFT_EXCLUDED`, `ZSHIFT_LIKED`, `ZSH_THEMES_DIR`)
+3. XDG config: `($ZSHIFT_CONFIG_HOME || $XDG_CONFIG_HOME || ~/.config)/zshift/`
+4. Bundled team defaults (read-only):
+   `Resources/{excluded_zsh_themes.txt, liked_zsh_themes.txt}`
+5. Empty (no embedded fallbacks); use `zshift config init` to seed user files
+
+#### Files and locations
+
+- User config directory: `($ZSHIFT_CONFIG_HOME || $XDG_CONFIG_HOME || ~/.config)/zshift/`
+- User files (created by `zshift config init`):
+  - `excluded.txt`: newline‑delimited theme names to exclude
+  - `liked.txt`: newline‑delimited theme names to prefer
+
+#### Environment variables
+
+- `ZSHIFT_EXCLUDED`: path to excluded list file
+- `ZSHIFT_LIKED`: path to liked list file
+- `ZSH_THEMES_DIR`: path to directory containing `.zsh-theme` files
+- `ZSHIFT_CONFIG_HOME`: overrides the config root (defaults to XDG)
+- `XDG_CONFIG_HOME`: standard XDG config root (defaults to `~/.config`)
+- `ZSHIFT_ZSHRC_TEMPLATE`: optional path used by `link-zshrc` when no flag is passed
+
+#### CLI flags
+
+- `zshift random --excluded-path <path> --liked-path <path> --themes-dir <dir>`
+- `zshift like <theme> --liked-path <path>`
+- `zshift exclude <theme> --excluded-path <path>`
+- `zshift link-zshrc --custom-zshrc <path> [--backup]`
+
+#### Subcommands
+
+- `zshift config init [--config-dir <dir>] [--force]`
+  - Seeds `excluded.txt` and `liked.txt` under the user config dir with team defaults.
+- `zshift config show [--json]`
+  - Prints resolved paths and sources (flag/env/xdg/bundle).
+- `zshift list available|liked|excluded [--json] [--themes-dir <dir>] \
+    [--excluded-path <p>] [--liked-path <p>]`
+  - Lists effective items for scripting or inspection.
+
+#### Quickstart
+
+```bash
+# 1) Initialize user config with team defaults
+zshift config init
+
+# 2) Pick a theme (excludes liked/excluded lists by default)
+zshift random
+
+# 3) Curate your lists
+zshift like ys
+zshift exclude robbyrussell
+
+# 4) Inspect current resolution
+zshift config show --json | jq .
+```
+
+#### Troubleshooting
+
+- `zshift random` errors with “No themes directory found”:
+  - Install Oh My Zsh, or provide `--themes-dir /path/to/themes`, or set `ZSH_THEMES_DIR`.
+- Team template not found for `link-zshrc`:
+  - Provide `--custom-zshrc` or set `ZSHIFT_ZSHRC_TEMPLATE`, or run `zshift doctor` for hints.
+- Use `zshift doctor` to print resolved config dir, list paths and sources, themes dir, and
+  bundle availability.
+
+### Banner example (Swift)
+
+zshift uses SwiftFigletKit’s random rendering API to print a themed banner. The equivalent Swift
+snippet is:
+
+```swift
+import SwiftFigletKit
+
+let theme = "ys" // dynamically chosen by zshift
+let banner = SFKRenderer.renderRandomBanner(text: "ZShift x " + theme, options: .init(newline: false))
+print(banner)
+print(theme) // plain theme name for shells
+```
+
+### Team‑first zsh shim (recommended)
+
+Keep login shells stable by sourcing the shared team template first, then your personal overrides.
+This ensures the figlet banner and theme logic always run, while your aliases and helpers remain.
+
+1. Replace `~/.zshrc` with this minimal shim:
+
+   ```zsh
+   #!/usr/bin/env zsh
+   # wrkstrm ~/.zshrc shim — team first, then personal overrides.
+
+   : ${ZSHIFT_PATH:="$HOME/todo3/code/mono/apple/spm/configs/zshift"}
+   TEAM_CFG="$ZSHIFT_PATH/Sources/Zshift/Resources/zshrc.txt"
+   PERSONAL_CFG="$HOME/todo3/code/configs/zshrc"
+   LOCAL_CFG="$HOME/.zshrc.local"
+
+   # Team template (figlet/theme/OMZ)
+   if [[ -f "$TEAM_CFG" ]]; then
+     source "$TEAM_CFG"
+   else
+     print -u2 -- "wrkstrm: team zshrc not found at $TEAM_CFG (set ZSHIFT_PATH?)"
+   fi
+
+   # Personal overrides
+   [[ -f "$PERSONAL_CFG" ]] && source "$PERSONAL_CFG"
+   [[ -f "$LOCAL_CFG" ]] && source "$LOCAL_CFG"
+   ```
+
+2. Persist required environment in `~/.zprofile`:
+
+   ```zsh
+   # Team configs location for the shim
+   export ZSHIFT_PATH="$HOME/todo3/code/mono/apple/spm/configs/zshift"
+
+   # Ensure repo‑installed SwiftPM tools (e.g., zshift) are on PATH
+   export PATH="$HOME/.swiftpm/bin:$PATH"
+   ```
+
+3. Open a new Terminal tab or `source ~/.zshrc` and verify:
+
+   - Expect a figlet banner and a plain `ZSH_THEME=...` line.
+   - `command -v zshift` should resolve (typically `~/.swiftpm/bin/zshift`).
+
+### Team plugins policy
+
+The team template loads a lean, guarded plugin set:
+
+- Base: `git`, `history-substring-search`.
+- Optional (loaded only if present): `zsh-autosuggestions`, `zsh-syntax-highlighting` (last),
+  `xcode` (macOS), `vscode` (when `code` is on PATH).
+- Explicitly not loaded: `fzf` (to avoid warnings on hosts without fzf).
+
+If you need additional plugins, propose changes to the team template rather than duplicating plugin
+setup in personal configs.
