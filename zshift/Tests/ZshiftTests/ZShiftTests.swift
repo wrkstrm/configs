@@ -56,7 +56,8 @@ func resolveListPathsAndLoading() throws {
   let (excludedURL, src) = ZShiftConfig.resolveListPath(kind: .excluded, flag: nil, env: env)
   #expect(src == .xdg)
   // Create user file and ensure loader prefers it
-  try FileManager.default.createDirectory(at: excludedURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+  try FileManager.default.createDirectory(
+    at: excludedURL.deletingLastPathComponent(), withIntermediateDirectories: true)
   try "foo\nbar\n".write(to: excludedURL, atomically: true, encoding: .utf8)
   let list = ZShiftConfig.loadList(kind: .excluded, flag: nil, env: env)
   #expect(list == ["bar", "foo"])

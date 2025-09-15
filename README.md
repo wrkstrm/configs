@@ -276,7 +276,7 @@ predictable across hosts.
 - `zshift config show [--json]`
   - Prints resolved paths and sources (flag/env/xdg/bundle).
 - `zshift list available|liked|excluded [--json] [--themes-dir <dir>] \
-    [--excluded-path <p>] [--liked-path <p>]`
+  [--excluded-path <p>] [--liked-path <p>]`
   - Lists effective items for scripting or inspection.
 
 #### Quickstart
@@ -316,7 +316,7 @@ import SwiftFigletKit
 let theme = "ys" // dynamically chosen by zshift
 let banner = SFKRenderer.renderRandomBanner(text: "ZShift x " + theme, options: .init(newline: false))
 print(banner)
-print(theme) // plain theme name for shells
+print("ZSH_THEME=\(theme)") // the team template prefers a prefixed last line
 ```
 
 ### Team‑first zsh shim (recommended)
@@ -358,8 +358,7 @@ This ensures the figlet banner and theme logic always run, while your aliases an
    ```
 
 3. Open a new Terminal tab or `source ~/.zshrc` and verify:
-
-   - Expect a figlet banner and a plain `ZSH_THEME=...` line.
+   - Expect a figlet banner and a final `ZSH_THEME=...` line (template parses this to set the theme).
    - `command -v zshift` should resolve (typically `~/.swiftpm/bin/zshift`).
 
 ### Team plugins policy

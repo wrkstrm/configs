@@ -51,8 +51,7 @@ struct ZShift: AsyncParsableCommand {
 
   /// Locate a resource URL. Try Bundle.module (dev + installed), then adjacent bundle,
   /// then a dev path relative to this source file.
-  static func resourceURL(named name: String, withExtension ext: String) -> URL?
-  {
+  static func resourceURL(named name: String, withExtension ext: String) -> URL? {
     // 1) SwiftPM resource bundle (works in dev and when installed)
     #if SWIFT_PACKAGE
     if let url = Bundle.module.url(forResource: name, withExtension: ext) {
@@ -316,6 +315,13 @@ struct Random: AsyncParsableCommand {
   @Option(name: .long, help: "Directory containing .zsh-theme files.")
   var themesDir: String?
 
+  @Option(
+    name: .long,
+    help:
+      "Output format for the selected theme. Choices: \(EmitFormat.allCases.map { $0.rawValue }.joined(separator: ", "))"
+  )
+  var emit: EmitFormat = .bare
+
   /// Get the list of available themes and exclude the ones specified in the file
   static func getAvailableThemes(excludedThemes: [String], themesDir: String)
     -> [String]
@@ -347,16 +353,25 @@ struct Random: AsyncParsableCommand {
       )
   }
 
+  enum EmitFormat: String, CaseIterable, ExpressibleByArgument {
+    case bare, prefixed
+  }
+
   /// Print out the path to the selected theme in zsh-compatible format
-  static func printSelectedTheme(_ theme: String) {
+  static func printSelectedTheme(_ theme: String, emit: EmitFormat) {
     // Use SwiftFigletKit high-level random banner API; it handles fallbacks.
     let banner = SFKRenderer.renderRandomBanner(
       text: "ZShift x " + theme,
       options: .init(newline: false)
     )
     Swift.print(banner, terminator: "")
-    // Print the theme name plainly for easy copy/paste
-    print(theme)
+    // Print theme in requested format
+    switch emit {
+    case .bare:
+      print(theme)
+    case .prefixed:
+      print("ZSH_THEME=\(theme)")
+    }
   }
 
   /// Read input
@@ -405,7 +420,7 @@ struct Random: AsyncParsableCommand {
       fatalError("Random theme not there.")
     }
 
-    Self.printSelectedTheme(randomTheme)
+    Self.printSelectedTheme(randomTheme, emit: emit)
   }
 }
 
@@ -516,101 +531,150 @@ struct Exclude: AsyncParsableCommand {
 }
 
 #if os(macOS) || os(Linux)
-  struct LinkZshrc: AsyncParsableCommand {
-    static let configuration = CommandConfiguration(
-      commandName: "link-zshrc",
-      abstract: "A utility to manage zsh configuration.",
-    )
+struct LinkZshrc: AsyncParsableCommand {
+  static let configuration = CommandConfiguration(
+    commandName: "link-zshrc",
+    abstract: "A utility to manage zsh configuration.",
+  )
 
-    @Option(
-      name: .long,
-      help: "Path to a custom .zshrc file to use instead of the bundled one."
-    )
-    var customZshrcPath: String?
+  @Option(
+    name: .long,
+    help: "Path to a custom .zshrc file to use instead of the bundled one."
+  )
+  var customZshrcPath: String?
 
-    @Flag(
-      name: .long,
-      help: "Backup the existing .zshrc file before overwriting."
-    )
-    var backup = false
+  @Flag(
+    name: .long,
+    help: "Backup the existing .zshrc file before overwriting."
+  )
+  var backup = false
 
-    func run() async throws {
-      let homeDir = FileManager.default.homeDirectoryForCurrentUser
-      let userZshrcPath = homeDir.appendingPathComponent(".zshrc")
+  func run() async throws {
+    let homeDir = FileManager.default.homeDirectoryForCurrentUser
+    let userZshrcPath = homeDir.appendingPathComponent(".zshrc")
 
-      print("DEBUG: User .zshrc path: \(userZshrcPath.path)")
+    print("DEBUG: User .zshrc path: \(userZshrcPath.path)")
 
-      // Backup existing .zshrc if requested
-      if backup, FileManager.default.fileExists(atPath: userZshrcPath.path) {
-        let backupPath = userZshrcPath.appendingPathExtension("backup")
-        try FileManager.default.copyItem(at: userZshrcPath, to: backupPath)
-        print("INFO: Existing .zshrc backed up to \(backupPath.path)")
-      }
-      let zshrcContents: String
-      do {
-        if let customPath = customZshrcPath
-          ?? ProcessInfo.processInfo.environment["ZSHIFT_ZSHRC_TEMPLATE"]
+    // Backup existing .zshrc if requested
+    if backup, FileManager.default.fileExists(atPath: userZshrcPath.path) {
+      let backupPath = userZshrcPath.appendingPathExtension("backup")
+      try FileManager.default.copyItem(at: userZshrcPath, to: backupPath)
+      print("INFO: Existing .zshrc backed up to \(backupPath.path)")
+    }
+    let zshrcContents: String
+    do {
+      if let customPath = customZshrcPath
+        ?? ProcessInfo.processInfo.environment["ZSHIFT_ZSHRC_TEMPLATE"]
+      {
+        let expandedPath = ZShift.expandTilde(in: customPath)
+        print("DEBUG: Using custom .zshrc at: \(expandedPath)")
+        zshrcContents = try String(
+          contentsOfFile: expandedPath,
+          encoding: .utf8
+        )
+      } else {
+        print(
+          "DEBUG: Attempting to load .zshrc from adjacent bundle or dev resources"
+        )
+        if let sharedZshrcPath = ZShift.resourceURL(
+          named: "zshrc",
+          withExtension: "txt"
+        ),
+          let text = try? String(contentsOf: sharedZshrcPath, encoding: .utf8)
         {
-          let expandedPath = ZShift.expandTilde(in: customPath)
-          print("DEBUG: Using custom .zshrc at: \(expandedPath)")
-          zshrcContents = try String(
-            contentsOfFile: expandedPath,
-            encoding: .utf8
-          )
+          zshrcContents = text
+          print("DEBUG: Found zshrc.txt at: \(sharedZshrcPath.path)")
         } else {
           print(
-            "DEBUG: Attempting to load .zshrc from adjacent bundle or dev resources"
+            "WARN: Bundled zshrc.txt not found; writing a minimal placeholder."
           )
-          if let sharedZshrcPath = ZShift.resourceURL(
-            named: "zshrc",
-            withExtension: "txt"
-          ),
-            let text = try? String(contentsOf: sharedZshrcPath, encoding: .utf8)
-          {
-            zshrcContents = text
-            print("DEBUG: Found zshrc.txt at: \(sharedZshrcPath.path)")
-          } else {
-            print(
-              "WARN: Bundled zshrc.txt not found; writing a minimal placeholder."
-            )
-            zshrcContents =
-              "# zshift: zshrc template not found; run 'zshift doctor' or provide --custom-zshrc\n"
-          }
+          zshrcContents =
+            "# zshift: zshrc template not found; run 'zshift doctor' or provide --custom-zshrc\n"
         }
-      } catch {
-        print("ERROR: Failed to load .zshrc: \(error)")
-        print(
-          "DEBUG: Current working directory: \(FileManager.default.currentDirectoryPath)"
-        )
-        throw ExitCode.failure
+      }
+    } catch {
+      print("ERROR: Failed to load .zshrc: \(error)")
+      print(
+        "DEBUG: Current working directory: \(FileManager.default.currentDirectoryPath)"
+      )
+      throw ExitCode.failure
+    }
+
+    let marker = "# >>> zshift config >>>"
+    let endMarker = "# <<< zshift config <<<"
+    // Legacy fallback markers used by setup.sh template writer
+    let legacyBegin = "### BEGIN wrkstrm-configs (zshrc.txt)"
+    let legacyEnd = "### END wrkstrm-configs (zshrc.txt)"
+    let contentsToAppend = "\n\(marker)\n\(zshrcContents)\n\(endMarker)\n"
+
+    if let existing = try? String(contentsOf: userZshrcPath, encoding: .utf8) {
+      func replaceBlock(begin: String, end: String, in text: String) -> String? {
+        let ns = text as NSString
+        let b = ns.range(of: begin)
+        let e = ns.range(of: end)
+        guard b.location != NSNotFound, e.location != NSNotFound, e.location > b.location else {
+          return nil
+        }
+        let before = String(text.prefix(b.location))
+        let afterStart = e.location + e.length
+        let after = String(text.suffix(max(0, text.count - afterStart)))
+        return before + contentsToAppend + after
       }
 
-      let marker = "# >>> zshift config >>>"
-      let endMarker = "# <<< zshift config <<<"
-      let contentsToAppend = "\n\(marker)\n\(zshrcContents)\n\(endMarker)\n"
-
-      if let existing = try? String(contentsOf: userZshrcPath, encoding: .utf8),
-        existing.contains(marker)
-      {
-        print("INFO: .zshrc already contains zshift config; skipping append.")
-      } else {
-        if FileManager.default.fileExists(atPath: userZshrcPath.path),
-          let fileHandle = FileHandle(forWritingAtPath: userZshrcPath.path)
-        {
-          fileHandle.seekToEndOfFile()
-          fileHandle.write(contentsToAppend.data(using: .utf8)!)
-          fileHandle.closeFile()
-        } else {
-          try contentsToAppend.write(
-            to: userZshrcPath,
-            atomically: true,
-            encoding: .utf8
-          )
+      var updatedAny = existing
+      if let legacyUpdated = replaceBlock(begin: legacyBegin, end: legacyEnd, in: updatedAny) {
+        updatedAny = legacyUpdated
+      }
+      if let primaryUpdated = replaceBlock(begin: marker, end: endMarker, in: updatedAny) {
+        updatedAny = primaryUpdated
+      }
+      if updatedAny != existing {
+        // De-dupe: ensure only a single primary block remains
+        while true {
+          let ns = updatedAny as NSString
+          let firstB = ns.range(of: marker)
+          let firstE = ns.range(of: endMarker)
+          guard firstB.location != NSNotFound, firstE.location != NSNotFound else { break }
+          // Search for any subsequent blocks after firstE
+          let searchRange = NSRange(location: firstE.location + firstE.length, length: max(0, ns.length - (firstE.location + firstE.length)))
+          let nextB = ns.range(of: marker, options: [], range: searchRange)
+          if nextB.location == NSNotFound { break }
+          let nextE = ns.range(of: endMarker, options: [], range: NSRange(location: nextB.location, length: ns.length - nextB.location))
+          if nextE.location == NSNotFound { break }
+          // Remove the extra block
+          let before = ns.substring(to: nextB.location)
+          let after = ns.substring(from: nextE.location + nextE.length)
+          updatedAny = before + after
         }
+        try updatedAny.write(to: userZshrcPath, atomically: true, encoding: .utf8)
+        print("INFO: Refreshed existing zshift config block in .zshrc.")
+      } else {
+        // No existing marker blocks; append
+        try (existing + contentsToAppend).write(
+          to: userZshrcPath,
+          atomically: true,
+          encoding: .utf8
+        )
         print("SUCCESS: .zshrc file has been updated.")
       }
+    } else {
+      if FileManager.default.fileExists(atPath: userZshrcPath.path),
+        let fileHandle = FileHandle(forWritingAtPath: userZshrcPath.path)
+      {
+        fileHandle.seekToEndOfFile()
+        fileHandle.write(contentsToAppend.data(using: .utf8)!)
+        fileHandle.closeFile()
+      } else {
+        try contentsToAppend.write(
+          to: userZshrcPath,
+          atomically: true,
+          encoding: .utf8
+        )
+      }
+      print("SUCCESS: .zshrc file has been updated.")
     }
   }
+}
 #endif  // os(macOS) || os(Linux)
 
 // MARK: - Doctor
@@ -650,6 +714,38 @@ struct Doctor: AsyncParsableCommand {
     let hasFigletBundle = FileManager.default.fileExists(
       atPath: figletBundle.path
     )
+
+    // Detect zshift output contract (bare theme vs prefixed with ZSH_THEME=)
+    let contract: String
+    var lastLine: String = ""
+    do {
+      // Invoke the current executable with "random" to capture output
+      let me = URL(fileURLWithPath: CommandLine.arguments.first ?? "zshift")
+      let p = Process()
+      p.executableURL = me
+      p.arguments = ["random"]
+      let pipe = Pipe()
+      p.standardOutput = pipe
+      p.standardError = Pipe()
+      try p.run()
+      p.waitUntilExit()
+      let data = pipe.fileHandleForReading.readDataToEndOfFile()
+      if let s = String(data: data, encoding: .utf8) {
+        let lines = s.split(separator: "\n", omittingEmptySubsequences: false)
+        if let last = lines.last {
+          lastLine = String(last).trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        if lines.contains(where: { $0.hasPrefix("ZSH_THEME=") }) {
+          contract = "prefixed"
+        } else {
+          contract = "bare"
+        }
+      } else {
+        contract = "unknown"
+      }
+    } catch {
+      contract = "unknown"
+    }
 
     // Resolved config
     let (excludedURL, excludedSrc) = ZShiftConfig.resolveListPath(
@@ -701,6 +797,8 @@ struct Doctor: AsyncParsableCommand {
     )
     print("- figlet fonts available: \(fontNames.count) font(s)")
     print("- fast-mode flags: WRKSTRM_FAST_SHELL=\(fast), CI=\(ci)")
+    print("- zshift output contract: \(contract)")
+    if !lastLine.isEmpty { print("- zshift random last line: \(lastLine)") }
   }
 }
 
