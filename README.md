@@ -29,8 +29,6 @@ This guide is specifically for M class Macs.
 
    # Install linting tools
    brew install swiftlint
-   brew install swiftformat
-   brew install swift-format
    ```
 
    Install `markdownlint-cli2` globally with npm for Markdown linting:
