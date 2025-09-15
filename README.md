@@ -73,16 +73,37 @@ This environment variable controls dependency resolution behavior:
 - `true`: Uses local dependencies for development
 - `false`: Uses remote dependencies (useful for CI environments)
 
-5. **Repo‑local CLI bin (recommended)**
+5. **Install CLIs (preferred: experimental‑install)**
 
-   Keep installed CLI tools scoped to this repo by using a local, gitignored bin:
-   - Installer: `bash .wrkstrm/clia/bin/swift/install-cli-tools.sh`
-   - Binaries land in: `.wrkstrm/clia/bin/swift/`
-   - Optional PATH: `export PATH="$(pwd)/.wrkstrm/clia/bin/swift:$PATH"`
+   Prefer SwiftPM’s install to the user bin so tools are available consistently:
+
+   ```bash
+   # From a package directory that builds an executable target
+   # Example: CLIA
+   cd code/mono/apple/spm/universal/clia
+   swift package experimental-install --configuration release
+
+   # Ensure ~/.swiftpm/bin is in your PATH (e.g., in ~/.zprofile)
+   export PATH="$HOME/.swiftpm/bin:$PATH"
+   clia --help
+   ```
+
+   Optional: repo‑local bin for scoped installs (does not touch user PATH):
+
+   ```bash
+   # From the repo root
+   mkdir -p .wrkstrm/clia/bin/swift
+   export PATH="$(pwd)/.wrkstrm/clia/bin/swift:$PATH" # optional, current shell only
+
+   # Build then link a tool into the local bin (example: CLIA)
+   (cd code/mono/apple/spm/universal/clia && swift build -c release)
+   ln -sf "$(pwd)/code/mono/apple/spm/universal/clia/.build/release/clia" \
+         ".wrkstrm/clia/bin/swift/clia"
+   ```
 
    Notes:
-   - This avoids polluting global PATH while keeping tools reproducible per‑repo.
-   - SwiftPM’s `experimental-install` still installs to `~/.swiftpm/bin`; you can use either approach.
+   - Preferred: `experimental-install` to `~/.swiftpm/bin` for user‑level availability.
+   - Alternative: repo‑local `.wrkstrm/clia/bin/swift/` to avoid modifying global PATH.
 
 ### Verify Your Tools
 
