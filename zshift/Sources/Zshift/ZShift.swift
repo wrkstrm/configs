@@ -49,18 +49,25 @@ struct ZShift: AsyncParsableCommand {
     return Bundle(url: candidate)
   }
 
-  /// Locate a resource URL without touching SwiftPM's `Bundle.module` to avoid fatal
-  /// when the bundle is not co-located with the installed binary.
+  /// Locate a resource URL. Try Bundle.module (dev + installed), then adjacent bundle,
+  /// then a dev path relative to this source file.
   static func resourceURL(named name: String, withExtension ext: String) -> URL?
   {
-    // 1) Try an adjacent runtime bundle (installed layout)
+    // 1) SwiftPM resource bundle (works in dev and when installed)
+    #if SWIFT_PACKAGE
+    if let url = Bundle.module.url(forResource: name, withExtension: ext) {
+      return url
+    }
+    #endif
+
+    // 2) Adjacent runtime bundle (installed layout)
     if let bundle = zshiftResourceBundle(),
       let url = bundle.url(forResource: name, withExtension: ext)
     {
       return url
     }
 
-    // 2) Try development layout via file path relative to this source file
+    // 3) Development layout via file path relative to this source file
     let devURL = URL(fileURLWithPath: #file)
       .deletingLastPathComponent()
       .appendingPathComponent("Resources")

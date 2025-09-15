@@ -96,6 +96,16 @@ link_with_zshift() {
   (
     cd "$ZSHIFT_DIR"
     swift run -c release zshift link-zshrc ${BACKUP:+--backup}
+
+    # Ensure zshift binary is installed to ~/.swiftpm/bin for interactive shells
+    if command -v swift >/dev/null 2>&1; then
+      BIN_DIR=$(swift build -c release --show-bin-path 2>/dev/null || true)
+      if [[ -n "$BIN_DIR" && -x "$BIN_DIR/zshift" ]]; then
+        mkdir -p "$HOME/.swiftpm/bin"
+        cp -f "$BIN_DIR/zshift" "$HOME/.swiftpm/bin/zshift"
+        echo "INFO: Installed zshift to $HOME/.swiftpm/bin/zshift"
+      fi
+    fi
   )
 }
 
