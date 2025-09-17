@@ -628,28 +628,55 @@ struct LinkZshrc: AsyncParsableCommand {
       if let primaryUpdated = replaceBlock(begin: marker, end: endMarker, in: updatedAny) {
         updatedAny = primaryUpdated
       }
-      if updatedAny != existing {
-        // De-dupe: ensure only a single primary block remains
+      // Detect whether the file already contains any known block markers
+      let hasLegacy = existing.contains(legacyBegin) && existing.contains(legacyEnd)
+      let hasPrimary = existing.contains(marker) && existing.contains(endMarker)
+      let changed = (updatedAny != existing)
+
+      if hasLegacy || hasPrimary {
+        // There is already a block present; ensure only a single primary block remains.
+        // Start from updatedAny (which may equal existing if content hasn't changed)
+        var deduped = updatedAny
         while true {
-          let ns = updatedAny as NSString
+          let ns = deduped as NSString
           let firstB = ns.range(of: marker)
           let firstE = ns.range(of: endMarker)
           guard firstB.location != NSNotFound, firstE.location != NSNotFound else { break }
           // Search for any subsequent blocks after firstE
-          let searchRange = NSRange(location: firstE.location + firstE.length, length: max(0, ns.length - (firstE.location + firstE.length)))
+          let searchRange = NSRange(
+            location: firstE.location + firstE.length,
+            length: max(0, ns.length - (firstE.location + firstE.length)))
           let nextB = ns.range(of: marker, options: [], range: searchRange)
           if nextB.location == NSNotFound { break }
-          let nextE = ns.range(of: endMarker, options: [], range: NSRange(location: nextB.location, length: ns.length - nextB.location))
+          let nextE = ns.range(
+            of: endMarker, options: [],
+            range: NSRange(location: nextB.location, length: ns.length - nextB.location))
           if nextE.location == NSNotFound { break }
           // Remove the extra block
           let before = ns.substring(to: nextB.location)
           let after = ns.substring(from: nextE.location + nextE.length)
-          updatedAny = before + after
+          deduped = before + after
         }
-        try updatedAny.write(to: userZshrcPath, atomically: true, encoding: .utf8)
-        print("INFO: Refreshed existing zshift config block in .zshrc.")
+        if deduped != existing {
+          try deduped.write(to: userZshrcPath, atomically: true, encoding: .utf8)
+          print("INFO: Refreshed and de‑duplicated zshift config block in .zshrc.")
+        } else if changed {
+          // Content changed but count did not; write changes
+          try updatedAny.write(to: userZshrcPath, atomically: true, encoding: .utf8)
+          print("INFO: Refreshed existing zshift config block in .zshrc.")
+        } else {
+          print("INFO: zshift config block already up to date; no changes.")
+        }
+      } else if changed {
+        // No existing markers; append a new block
+        try (existing + contentsToAppend).write(
+          to: userZshrcPath,
+          atomically: true,
+          encoding: .utf8
+        )
+        print("SUCCESS: .zshrc file has been updated.")
       } else {
-        // No existing marker blocks; append
+        // No markers found, and replacement did not change (unlikely); append block for safety
         try (existing + contentsToAppend).write(
           to: userZshrcPath,
           atomically: true,

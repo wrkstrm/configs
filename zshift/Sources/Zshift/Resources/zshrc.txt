@@ -1,4 +1,11 @@
-emulate -L zsh
+# Guard against multiple inclusions (shim + embedded block)
+if [[ -n ${WRKSTRM_ZSHIFT_SOURCED:-} ]]; then
+  return 0
+fi
+typeset -g WRKSTRM_ZSHIFT_SOURCED=1
+
+zshift_team_template() {
+  emulate -L zsh
 # Team zsh template with fast/human split.
 # See .wrkstrm/clia/swift_test_engineer_AGENCY.md (2025-09-11) for policy.
 zmodload zsh/datetime
@@ -89,6 +96,10 @@ if [[ $WRKSTRM_IS_INTERACTIVE == 1 ]]; then
     # Extract theme from last line; tolerate legacy "ZSH_THEME=" prefix
     _zstheme=$(print -r -- "$_zsout" | tail -n 1 | sed 's/.*ZSH_THEME=//')
     [[ -n $_zstheme ]] && export ZSH_THEME="$_zstheme"
+    # Also echo the theme explicitly so users can like/exclude it easily
+    if [[ -n $_zstheme ]]; then
+      print -r -- "ZSH_THEME=$_zstheme"
+    fi
   fi
 
   # Load OMZ once with the chosen theme
@@ -101,3 +112,10 @@ if [[ $WRKSTRM_IS_INTERACTIVE == 1 ]]; then
 
   # (No load-time echo; keep startup silent)
 fi
+}
+
+zshift_team_template
+unset -f zshift_team_template
+
+# Ensure prompt substitutions remain enabled outside the function
+setopt prompt_subst
