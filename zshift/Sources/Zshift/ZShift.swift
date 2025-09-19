@@ -338,7 +338,6 @@ struct ZShiftConfig {
       .lowercased()
   }
 
-
   static func resolveThemesDir(
     flag: String?,
     env: [String: String] = ProcessInfo.processInfo.environment
@@ -366,11 +365,9 @@ struct ZShiftConfig {
   }
 }
 
-
 enum ZShiftPreferenceKind: String, CaseIterable, ExpressibleByArgument {
   case theme, font
 }
-
 
 struct Random: AsyncParsableCommand {
   static let configuration = CommandConfiguration(
@@ -499,7 +496,8 @@ struct Random: AsyncParsableCommand {
       Swift.print(banner)
     }
     let fontValue = font?.isEmpty == false ? font! : "random"
-    let canonicalFont = fontValue == "random"
+    let canonicalFont =
+      fontValue == "random"
       ? "random"
       : ZShiftConfig.canonicalFontName(fontValue)
     print("FIGLET_FONT=\(canonicalFont)")
@@ -570,7 +568,6 @@ struct Random: AsyncParsableCommand {
     Self.printSelectedTheme(randomTheme, font: chosenFont, emit: emit)
   }
 }
-
 
 struct Like: AsyncParsableCommand {
   static let configuration = CommandConfiguration(
@@ -648,8 +645,6 @@ struct Like: AsyncParsableCommand {
   }
 }
 
-
-
 struct Exclude: AsyncParsableCommand {
   static let configuration = CommandConfiguration(
     abstract: "Exclude a zsh theme or FIGlet font",
@@ -725,7 +720,6 @@ struct Exclude: AsyncParsableCommand {
     }
   }
 }
-
 
 #if os(macOS) || os(Linux)
 struct LinkZshrc: AsyncParsableCommand {
@@ -900,8 +894,6 @@ struct LinkZshrc: AsyncParsableCommand {
   }
 }
 #endif  // os(macOS) || os(Linux)
-
-
 
 struct Doctor: AsyncParsableCommand {
   static let configuration = CommandConfiguration(
