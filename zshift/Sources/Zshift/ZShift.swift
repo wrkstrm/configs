@@ -200,6 +200,7 @@ struct ZShift: AsyncParsableCommand {
 
 struct ZShiftConfig {
   enum Kind { case excluded, liked }
+  enum FontKind { case excluded, liked }
   enum Source: String { case flag, env, xdg, bundle, probe, empty }
 
   static func expand(_ path: String) -> String { ZShift.expandTilde(in: path) }
@@ -268,10 +269,75 @@ struct ZShiftConfig {
         contents = ""
       }
     }
+    let canonicalEntries = contents.components(separatedBy: .newlines)
+      .map(ZShiftConfig.canonicalFontName)
+      .filter { !$0.isEmpty }
+    return Array(Set(canonicalEntries)).sorted()
+  }
+
+  static func resolveFontListPath(
+    kind: FontKind,
+    flag: String?,
+    env: [String: String] = ProcessInfo.processInfo.environment
+  ) -> (url: URL, source: Source) {
+    if let flag, !flag.isEmpty {
+      return (URL(fileURLWithPath: expand(flag)), .flag)
+    }
+    switch kind {
+    case .excluded:
+      if let value = env["ZSHIFT_FONT_EXCLUDED"], !value.isEmpty {
+        return (URL(fileURLWithPath: expand(value)), .env)
+      }
+    case .liked:
+      if let value = env["ZSHIFT_FONT_LIKED"], !value.isEmpty {
+        return (URL(fileURLWithPath: expand(value)), .env)
+      }
+    }
+    let directory = resolveConfigDir(env: env)
+      .appendingPathComponent("zshift", isDirectory: true)
+      .appendingPathComponent("fonts", isDirectory: true)
+    let fileName: String = {
+      switch kind {
+      case .excluded: return "excluded.txt"
+      case .liked: return "liked.txt"
+      }
+    }()
+    return (directory.appendingPathComponent(fileName), .xdg)
+  }
+
+  static func loadFontList(
+    kind: FontKind,
+    flag: String?,
+    env: [String: String] = ProcessInfo.processInfo.environment
+  ) -> [String] {
+    let (url, _) = resolveFontListPath(kind: kind, flag: flag, env: env)
+    let fm = FileManager.default
+    let contents: String
+    if fm.fileExists(atPath: url.path),
+      let text = try? String(contentsOf: url, encoding: .utf8)
+    {
+      contents = text
+    } else {
+      let resourceName = (kind == .excluded) ? "excluded_figlet_fonts" : "liked_figlet_fonts"
+      if let resourceURL = ZShift.resourceURL(named: resourceName, withExtension: "txt"),
+        let text = try? String(contentsOf: resourceURL, encoding: .utf8)
+      {
+        contents = text
+      } else {
+        contents = ""
+      }
+    }
     return Set(
       contents.components(separatedBy: .newlines).filter { !$0.isEmpty }
     ).sorted()
   }
+
+  static func canonicalFontName(_ name: String) -> String {
+    name.replacingOccurrences(of: "_", with: " ")
+      .trimmingCharacters(in: .whitespacesAndNewlines)
+      .lowercased()
+  }
+
 
   static func resolveThemesDir(
     flag: String?,
@@ -300,10 +366,16 @@ struct ZShiftConfig {
   }
 }
 
+
+enum ZShiftPreferenceKind: String, CaseIterable, ExpressibleByArgument {
+  case theme, font
+}
+
+
 struct Random: AsyncParsableCommand {
   static let configuration = CommandConfiguration(
     abstract: "Load a zsh theme",
-    helpNames: .shortAndLong,
+    helpNames: .shortAndLong
   )
 
   @Option(name: .long, help: "Path to excluded themes list.")
@@ -312,13 +384,25 @@ struct Random: AsyncParsableCommand {
   @Option(name: .long, help: "Path to liked themes list.")
   var likedPath: String?
 
+  @Option(
+    name: [.customLong("excluded-fonts-path")],
+    help: "Path to excluded FIGlet fonts list."
+  )
+  var excludedFontsPath: String?
+
+  @Option(
+    name: [.customLong("liked-fonts-path")],
+    help: "Path to liked FIGlet fonts list."
+  )
+  var likedFontsPath: String?
+
   @Option(name: .long, help: "Directory containing .zsh-theme files.")
   var themesDir: String?
 
   @Option(
     name: .long,
     help:
-      "Output format for the selected theme. Choices: \(EmitFormat.allCases.map { $0.rawValue }.joined(separator: ", "))"
+      "Output format for the selected theme and FIGlet font. Choices: \(EmitFormat.allCases.map { $0.rawValue }.joined(separator: ", "))"
   )
   var emit: EmitFormat = .bare
 
@@ -326,7 +410,6 @@ struct Random: AsyncParsableCommand {
   static func getAvailableThemes(excludedThemes: [String], themesDir: String)
     -> [String]
   {
-    // Get the list of all available ZSH themes.
     guard
       let allThemes = try? FileManager.default.contentsOfDirectory(
         atPath: ZShift.expandTilde(in: themesDir)
@@ -334,7 +417,6 @@ struct Random: AsyncParsableCommand {
     else {
       fatalError("Failed to list themes at \(themesDir)")
     }
-    // Filter out the bad themes.
     return ["random"]
       + allThemes.filter {
         $0.hasSuffix(".zsh-theme")
@@ -349,26 +431,82 @@ struct Random: AsyncParsableCommand {
     themes.randomElement()?.components(separatedBy: "/").last?
       .replacingOccurrences(
         of: ".zsh-theme",
-        with: "",
+        with: ""
       )
+  }
+
+  static func chooseFigletFont(
+    likedFonts: [String],
+    excludedFonts: [String]
+  ) -> String? {
+    let allFonts = SFKFonts.listNames()
+    guard !allFonts.isEmpty else { return nil }
+
+    var canonicalMap: [String: String] = [:]
+    for name in allFonts {
+      let canonical = ZShiftConfig.canonicalFontName(name)
+      if canonicalMap[canonical] == nil {
+        canonicalMap[canonical] = name
+      }
+    }
+    let excluded = Set(excludedFonts.map(ZShiftConfig.canonicalFontName))
+    let liked = Set(likedFonts.map(ZShiftConfig.canonicalFontName))
+
+    let freshPool = allFonts.filter {
+      let canonical = ZShiftConfig.canonicalFontName($0)
+      return !excluded.contains(canonical) && !liked.contains(canonical)
+    }
+
+    var candidates = freshPool
+    if candidates.isEmpty {
+      let likedMatches = liked.compactMap { canonicalMap[$0] }
+      if !likedMatches.isEmpty {
+        candidates = likedMatches
+      } else {
+        candidates = allFonts.filter {
+          let canonical = ZShiftConfig.canonicalFontName($0)
+          return !excluded.contains(canonical)
+        }
+      }
+    }
+
+    return candidates.randomElement()
   }
 
   enum EmitFormat: String, CaseIterable, ExpressibleByArgument {
     case bare, prefixed
   }
 
-  /// Print out the path to the selected theme in zsh-compatible format
-  static func printSelectedTheme(_ theme: String, emit: EmitFormat) {
-    // Use SwiftFigletKit high-level random banner API; it handles fallbacks.
-    let banner = SFKRenderer.renderRandomBanner(
-      text: "ZShift x " + theme,
-      options: .init(newline: false)
-    )
-    Swift.print(banner, terminator: "")
-    // Print theme in requested format
+  /// Print out the selected theme along with optional FIGlet font metadata
+  static func printSelectedTheme(_ theme: String, font: String?, emit: EmitFormat) {
+    let banner: String
+    if let font, !font.isEmpty {
+      banner = SFKRenderer.render(
+        text: "ZShift x " + theme,
+        font: .named(font),
+        color: .mixedRandom(),
+        options: .init(newline: false)
+      )
+    } else {
+      banner = SFKRenderer.renderRandomBanner(
+        text: "ZShift x " + theme,
+        options: .init(newline: false)
+      )
+    }
+    if banner.hasSuffix("\n") {
+      Swift.print(banner, terminator: "")
+    } else {
+      Swift.print(banner)
+    }
+    let fontValue = font?.isEmpty == false ? font! : "random"
+    let canonicalFont = fontValue == "random"
+      ? "random"
+      : ZShiftConfig.canonicalFontName(fontValue)
+    print("FIGLET_FONT=\(canonicalFont)")
     switch emit {
     case .bare:
       print(theme)
+
     case .prefixed:
       print("ZSH_THEME=\(theme)")
     }
@@ -378,7 +516,7 @@ struct Random: AsyncParsableCommand {
   static func readInput() -> String {
     print(
       "Enter the path to your bad themes file (e.g., ~/excluded_zsh_themes.txt): ",
-      terminator: "",
+      terminator: ""
     )
     guard let excludedThemesPath = readLine() else {
       fatalError("Failed to read file path")
@@ -388,7 +526,6 @@ struct Random: AsyncParsableCommand {
 
   func run() async throws {
     let env = ProcessInfo.processInfo.environment
-    // Resolve configuration
     let likedThemes: [String] = ZShiftConfig.loadList(
       kind: .liked,
       flag: likedPath,
@@ -399,15 +536,23 @@ struct Random: AsyncParsableCommand {
       flag: excludedPath,
       env: env
     )
+    let likedFonts: [String] = ZShiftConfig.loadFontList(
+      kind: .liked,
+      flag: likedFontsPath,
+      env: env
+    )
+    let excludedFonts: [String] = ZShiftConfig.loadFontList(
+      kind: .excluded,
+      flag: excludedFontsPath,
+      env: env
+    )
     guard
-      let themesURL = ZShiftConfig.resolveThemesDir(flag: themesDir, env: env)?
-        .url
+      let themesURL = ZShiftConfig.resolveThemesDir(flag: themesDir, env: env)?.url
     else {
       fatalError(
         "No themes directory found. Set --themes-dir or ZSH_THEMES_DIR, or install Oh My Zsh."
       )
     }
-    // Filter out the seen themes.
     var goodThemes: [String] = Self.getAvailableThemes(
       excludedThemes: excludedThemes + likedThemes,
       themesDir: themesURL.path
@@ -415,120 +560,172 @@ struct Random: AsyncParsableCommand {
     if goodThemes.isEmpty {
       goodThemes = likedThemes
     }
-    // Choose a random good theme.
     guard let randomTheme = Self.getRandomTheme(from: goodThemes) else {
       fatalError("Random theme not there.")
     }
-
-    Self.printSelectedTheme(randomTheme, emit: emit)
+    let chosenFont = Self.chooseFigletFont(
+      likedFonts: likedFonts,
+      excludedFonts: excludedFonts
+    )
+    Self.printSelectedTheme(randomTheme, font: chosenFont, emit: emit)
   }
 }
 
+
 struct Like: AsyncParsableCommand {
   static let configuration = CommandConfiguration(
-    abstract: "Like a zsh theme",
-    helpNames: .shortAndLong,
+    abstract: "Like a zsh theme or FIGlet font",
+    helpNames: .shortAndLong
   )
 
-  @Argument(help: "The theme to like.")
-  var likedTheme: String
+  @Argument(help: "Name of the theme or FIGlet font to like.")
+  var name: String
+
+  @Option(
+    name: .long,
+    help: "Whether to operate on theme or FIGlet font preferences."
+  )
+  var kind: ZShiftPreferenceKind = .theme
 
   @Option(name: .long, help: "Path to liked themes list.")
   var likedPath: String?
 
-  /// Read input
-  static func readInput() -> String {
-    print(
-      "Enter the path to your bad themes file (e.g., ~/excluded_zsh_themes.txt): ",
-      terminator: "",
-    )
-    guard let excludedThemesPath = readLine() else {
-      fatalError("Failed to read file path")
-    }
-    return excludedThemesPath
-  }
+  @Option(
+    name: [.customLong("liked-fonts-path")],
+    help: "Path to liked FIGlet fonts list."
+  )
+  var likedFontsPath: String?
 
   mutating func run() async throws {
     let env = ProcessInfo.processInfo.environment
-    // Load current liked (effective)
-    let likedThemes = ZShiftConfig.loadList(
-      kind: .liked,
-      flag: likedPath,
-      env: env
-    )
-    let (destURL, _) = ZShiftConfig.resolveListPath(
-      kind: .liked,
-      flag: likedPath,
-      env: env
-    )
-    // Ensure parent directory exists
-    try FileManager.default.createDirectory(
-      at: destURL.deletingLastPathComponent(),
-      withIntermediateDirectories: true
-    )
+    switch kind {
+    case .theme:
+      let likedThemes = ZShiftConfig.loadList(
+        kind: .liked,
+        flag: likedPath,
+        env: env
+      )
+      let (destination, _) = ZShiftConfig.resolveListPath(
+        kind: .liked,
+        flag: likedPath,
+        env: env
+      )
+      try FileManager.default.createDirectory(
+        at: destination.deletingLastPathComponent(),
+        withIntermediateDirectories: true
+      )
+      guard !likedThemes.contains(name) else {
+        print("Theme '\(name)' is already in your liked themes.")
+        return
+      }
+      try ZShift.append(theme: name, to: destination.path)
+      print("Theme '\(name)' has been added to your liked themes.")
 
-    // Check if the theme is already liked
-    guard !likedThemes.contains(likedTheme) else {
-      print("Theme '\(likedTheme)' is already in your liked themes.")
-      return
+    case .font:
+      let likedFonts = ZShiftConfig.loadFontList(
+        kind: .liked,
+        flag: likedFontsPath,
+        env: env
+      )
+      let canonicalExisting = Set(likedFonts.map(ZShiftConfig.canonicalFontName))
+      let candidate = ZShiftConfig.canonicalFontName(name)
+      guard !canonicalExisting.contains(candidate) else {
+        print("FIGlet font '\(candidate)' is already in your liked fonts.")
+        return
+      }
+      let (destination, _) = ZShiftConfig.resolveFontListPath(
+        kind: .liked,
+        flag: likedFontsPath,
+        env: env
+      )
+      try FileManager.default.createDirectory(
+        at: destination.deletingLastPathComponent(),
+        withIntermediateDirectories: true
+      )
+      try ZShift.append(theme: candidate, to: destination.path)
+      print("FIGlet font '\(candidate)' has been added to your liked fonts.")
     }
-    // Append the new liked theme
-    do {
-      try ZShift.append(theme: likedTheme, to: destURL.path)
-    } catch {
-      fatalError("Could not save '\(likedTheme)'.")
-    }
-
-    print("Theme '\(likedTheme)' has been added to your liked themes.")
   }
 }
 
+
+
 struct Exclude: AsyncParsableCommand {
   static let configuration = CommandConfiguration(
-    abstract: "Exclude a zsh theme",
-    helpNames: .shortAndLong,
+    abstract: "Exclude a zsh theme or FIGlet font",
+    helpNames: .shortAndLong
   )
 
-  @Argument(help: "The theme to exclude.")
-  var excludeTheme: String
+  @Argument(help: "Name of the theme or FIGlet font to exclude.")
+  var name: String
+
+  @Option(
+    name: .long,
+    help: "Whether to operate on theme or FIGlet font preferences."
+  )
+  var kind: ZShiftPreferenceKind = .theme
 
   @Option(name: .long, help: "Path to excluded themes list.")
   var excludedPath: String?
 
+  @Option(
+    name: [.customLong("excluded-fonts-path")],
+    help: "Path to excluded FIGlet fonts list."
+  )
+  var excludedFontsPath: String?
+
   mutating func run() async throws {
     let env = ProcessInfo.processInfo.environment
-    // Load current excluded (effective)
-    let excludedThemes = ZShiftConfig.loadList(
-      kind: .excluded,
-      flag: excludedPath,
-      env: env
-    )
-    let (destURL, _) = ZShiftConfig.resolveListPath(
-      kind: .excluded,
-      flag: excludedPath,
-      env: env
-    )
-    // Ensure parent directory exists
-    try FileManager.default.createDirectory(
-      at: destURL.deletingLastPathComponent(),
-      withIntermediateDirectories: true
-    )
+    switch kind {
+    case .theme:
+      let excludedThemes = ZShiftConfig.loadList(
+        kind: .excluded,
+        flag: excludedPath,
+        env: env
+      )
+      guard !excludedThemes.contains(name) else {
+        print("Theme '\(name)' is already in your excluded themes.")
+        return
+      }
+      let (destination, _) = ZShiftConfig.resolveListPath(
+        kind: .excluded,
+        flag: excludedPath,
+        env: env
+      )
+      try FileManager.default.createDirectory(
+        at: destination.deletingLastPathComponent(),
+        withIntermediateDirectories: true
+      )
+      try ZShift.append(theme: name, to: destination.path)
+      print("Theme '\(name)' has been added to your excluded themes.")
 
-    // Check if the theme is already liked
-    guard !excludedThemes.contains(excludeTheme) else {
-      print("Theme '\(excludeTheme)' is already in your excluded themes.")
-      return
+    case .font:
+      let excludedFonts = ZShiftConfig.loadFontList(
+        kind: .excluded,
+        flag: excludedFontsPath,
+        env: env
+      )
+      let canonicalExisting = Set(excludedFonts.map(ZShiftConfig.canonicalFontName))
+      let candidate = ZShiftConfig.canonicalFontName(name)
+      guard !canonicalExisting.contains(candidate) else {
+        print("FIGlet font '\(candidate)' is already in your excluded fonts.")
+        return
+      }
+      let (destination, _) = ZShiftConfig.resolveFontListPath(
+        kind: .excluded,
+        flag: excludedFontsPath,
+        env: env
+      )
+      try FileManager.default.createDirectory(
+        at: destination.deletingLastPathComponent(),
+        withIntermediateDirectories: true
+      )
+      try ZShift.append(theme: candidate, to: destination.path)
+      print("FIGlet font '\(candidate)' has been added to your excluded fonts.")
     }
-    // Append the new excluded theme
-    do {
-      try ZShift.append(theme: excludeTheme, to: destURL.path)
-    } catch {
-      fatalError("Could not exclude '\(excludeTheme)'.")
-    }
-
-    print("Theme '\(excludeTheme)' has been added to your excluded themes.")
   }
 }
+
 
 #if os(macOS) || os(Linux)
 struct LinkZshrc: AsyncParsableCommand {
@@ -704,7 +901,7 @@ struct LinkZshrc: AsyncParsableCommand {
 }
 #endif  // os(macOS) || os(Linux)
 
-// MARK: - Doctor
+
 
 struct Doctor: AsyncParsableCommand {
   static let configuration = CommandConfiguration(
@@ -785,6 +982,16 @@ struct Doctor: AsyncParsableCommand {
       flag: nil,
       env: env
     )
+    let (fontExcludedURL, fontExcludedSrc) = ZShiftConfig.resolveFontListPath(
+      kind: .excluded,
+      flag: nil,
+      env: env
+    )
+    let (fontLikedURL, fontLikedSrc) = ZShiftConfig.resolveFontListPath(
+      kind: .liked,
+      flag: nil,
+      env: env
+    )
     let themesResolved = ZShiftConfig.resolveThemesDir(flag: nil, env: env)
     let configDir = ZShiftConfig.resolveConfigDir(env: env)
 
@@ -804,6 +1011,8 @@ struct Doctor: AsyncParsableCommand {
     print("- config dir: \(configDir.path)")
     print("- excluded path (\(excludedSrc.rawValue)): \(excludedURL.path)")
     print("- liked path (\(likedSrc.rawValue)): \(likedURL.path)")
+    print("- excluded fonts path (\(fontExcludedSrc.rawValue)): \(fontExcludedURL.path)")
+    print("- liked fonts path (\(fontLikedSrc.rawValue)): \(fontLikedURL.path)")
     if let themesResolved {
       print(
         "- themes dir (\(themesResolved.source.rawValue)): \(themesResolved.url.path)"
@@ -834,12 +1043,15 @@ struct Doctor: AsyncParsableCommand {
 struct List: AsyncParsableCommand {
   static let configuration = CommandConfiguration(
     commandName: "list",
-    abstract: "List available, liked, or excluded themes",
+    abstract: "List available, liked, or excluded themes or FIGlet fonts",
     helpNames: .shortAndLong
   )
 
   enum Category: String, ExpressibleByArgument, CaseIterable {
     case available, liked, excluded
+    case availableFonts = "available-fonts"
+    case likedFonts = "liked-fonts"
+    case excludedFonts = "excluded-fonts"
   }
 
   @Argument(
@@ -854,13 +1066,15 @@ struct List: AsyncParsableCommand {
   @Option(name: .long) var excludedPath: String?
   @Option(name: .long) var likedPath: String?
   @Option(name: .long) var themesDir: String?
+  @Option(name: [.customLong("excluded-fonts-path")]) var excludedFontsPath: String?
+  @Option(name: [.customLong("liked-fonts-path")]) var likedFontsPath: String?
 
   func run() async throws {
     let env = ProcessInfo.processInfo.environment
     switch category {
     case .available:
-      let liked = ZShiftConfig.loadList(kind: .liked, flag: likedPath, env: env)
-      let excluded = ZShiftConfig.loadList(
+      let likedThemes = ZShiftConfig.loadList(kind: .liked, flag: likedPath, env: env)
+      let excludedThemes = ZShiftConfig.loadList(
         kind: .excluded,
         flag: excludedPath,
         env: env
@@ -873,17 +1087,17 @@ struct List: AsyncParsableCommand {
       else {
         throw ExitCode.failure
       }
-      let all = Random.getAvailableThemes(
-        excludedThemes: excluded + liked,
+      let themes = Random.getAvailableThemes(
+        excludedThemes: excludedThemes + likedThemes,
         themesDir: themesURL.path
-      )
-      let withoutRandom = all.filter { $0 != "random" }
+      ).filter { $0 != "random" }
       if json {
-        let data = try JSONEncoder().encode(withoutRandom)
+        let data = try JSONEncoder().encode(themes)
         if let s = String(data: data, encoding: .utf8) { print(s) }
       } else {
-        withoutRandom.forEach { print($0) }
+        themes.forEach { print($0) }
       }
+
     case .liked:
       let list = ZShiftConfig.loadList(kind: .liked, flag: likedPath, env: env)
       if json {
@@ -892,6 +1106,7 @@ struct List: AsyncParsableCommand {
       } else {
         list.forEach { print($0) }
       }
+
     case .excluded:
       let list = ZShiftConfig.loadList(
         kind: .excluded,
@@ -903,6 +1118,54 @@ struct List: AsyncParsableCommand {
         if let s = String(data: data, encoding: .utf8) { print(s) }
       } else {
         list.forEach { print($0) }
+      }
+
+    case .availableFonts:
+      let likedFonts = ZShiftConfig.loadFontList(
+        kind: .liked,
+        flag: likedFontsPath,
+        env: env
+      )
+      let excludedFonts = ZShiftConfig.loadFontList(
+        kind: .excluded,
+        flag: excludedFontsPath,
+        env: env
+      )
+      let exclusions = Set((likedFonts + excludedFonts).map(ZShiftConfig.canonicalFontName))
+      let fonts = SFKFonts.listNames().filter {
+        !exclusions.contains(ZShiftConfig.canonicalFontName($0))
+      }
+      if json {
+        let data = try JSONEncoder().encode(fonts)
+        if let s = String(data: data, encoding: .utf8) { print(s) }
+      } else {
+        fonts.forEach { print($0) }
+      }
+
+    case .likedFonts:
+      let fonts = ZShiftConfig.loadFontList(
+        kind: .liked,
+        flag: likedFontsPath,
+        env: env
+      )
+      if json {
+        let data = try JSONEncoder().encode(fonts)
+        if let s = String(data: data, encoding: .utf8) { print(s) }
+      } else {
+        fonts.forEach { print($0) }
+      }
+
+    case .excludedFonts:
+      let fonts = ZShiftConfig.loadFontList(
+        kind: .excluded,
+        flag: excludedFontsPath,
+        env: env
+      )
+      if json {
+        let data = try JSONEncoder().encode(fonts)
+        if let s = String(data: data, encoding: .utf8) { print(s) }
+      } else {
+        fonts.forEach { print($0) }
       }
     }
   }
@@ -948,6 +1211,8 @@ struct Config: AsyncParsableCommand {
       let items: [(String, String)] = [
         ("excluded_zsh_themes", "excluded.txt"),
         ("liked_zsh_themes", "liked.txt"),
+        ("excluded_figlet_fonts", "fonts/excluded.txt"),
+        ("liked_figlet_fonts", "fonts/liked.txt"),
       ]
       for (name, dest) in items {
         let destURL = dir.appendingPathComponent(dest)
@@ -957,8 +1222,16 @@ struct Config: AsyncParsableCommand {
         if let res = ZShift.resourceURL(named: name, withExtension: "txt"),
           let text = try? String(contentsOf: res, encoding: .utf8)
         {
+          try FileManager.default.createDirectory(
+            at: destURL.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+          )
           try text.write(to: destURL, atomically: true, encoding: .utf8)
         } else {
+          try FileManager.default.createDirectory(
+            at: destURL.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+          )
           try "".write(to: destURL, atomically: true, encoding: .utf8)
         }
       }
@@ -987,6 +1260,16 @@ struct Config: AsyncParsableCommand {
         flag: nil,
         env: env
       )
+      let (fontExcluded, fontExcludedSrc) = ZShiftConfig.resolveFontListPath(
+        kind: .excluded,
+        flag: nil,
+        env: env
+      )
+      let (fontLiked, fontLikedSrc) = ZShiftConfig.resolveFontListPath(
+        kind: .liked,
+        flag: nil,
+        env: env
+      )
       let themes = ZShiftConfig.resolveThemesDir(flag: nil, env: env)
       if json {
         struct Model: Codable {
@@ -995,6 +1278,10 @@ struct Config: AsyncParsableCommand {
           let excludedSource: String
           let liked: String
           let likedSource: String
+          let fontExcluded: String
+          let fontExcludedSource: String
+          let fontLiked: String
+          let fontLikedSource: String
           let themesDir: String?
           let themesSource: String?
         }
@@ -1004,6 +1291,10 @@ struct Config: AsyncParsableCommand {
           excludedSource: eSrc.rawValue,
           liked: liked.path,
           likedSource: lSrc.rawValue,
+          fontExcluded: fontExcluded.path,
+          fontExcludedSource: fontExcludedSrc.rawValue,
+          fontLiked: fontLiked.path,
+          fontLikedSource: fontLikedSrc.rawValue,
           themesDir: themes?.url.path,
           themesSource: themes?.source.rawValue
         )
@@ -1013,6 +1304,8 @@ struct Config: AsyncParsableCommand {
         print("config dir: \(configDir.path)")
         print("excluded: \(excluded.path) [\(eSrc.rawValue)]")
         print("liked:    \(liked.path) [\(lSrc.rawValue)]")
+        print("fonts (excluded): \(fontExcluded.path) [\(fontExcludedSrc.rawValue)]")
+        print("fonts (liked):    \(fontLiked.path) [\(fontLikedSrc.rawValue)]")
         if let themes {
           print("themes:   \(themes.url.path) [\(themes.source.rawValue)]")
         } else {

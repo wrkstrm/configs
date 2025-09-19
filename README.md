@@ -246,17 +246,23 @@ predictable across hosts.
    `Resources/{excluded_zsh_themes.txt, liked_zsh_themes.txt}`
 5. Empty (no embedded fallbacks); use `zshift config init` to seed user files
 
+The same precedence applies to FIGlet font lists via `--excluded-fonts-path`, `--liked-fonts-path`, and the `ZSHIFT_FONT_EXCLUDED`/`ZSHIFT_FONT_LIKED` environment variables.
+
 #### Files and locations
 
 - User config directory: `($ZSHIFT_CONFIG_HOME || $XDG_CONFIG_HOME || ~/.config)/zshift/`
 - User files (created by `zshift config init`):
   - `excluded.txt`: newline‑delimited theme names to exclude
   - `liked.txt`: newline‑delimited theme names to prefer
+  - `fonts/excluded.txt`: newline‑delimited FIGlet fonts to suppress
+  - `fonts/liked.txt`: newline‑delimited FIGlet fonts to prefer
 
 #### Environment variables
 
 - `ZSHIFT_EXCLUDED`: path to excluded list file
 - `ZSHIFT_LIKED`: path to liked list file
+- `ZSHIFT_FONT_EXCLUDED`: path to excluded FIGlet fonts list
+- `ZSHIFT_FONT_LIKED`: path to liked FIGlet fonts list
 - `ZSH_THEMES_DIR`: path to directory containing `.zsh-theme` files
 - `ZSHIFT_CONFIG_HOME`: overrides the config root (defaults to XDG)
 - `XDG_CONFIG_HOME`: standard XDG config root (defaults to `~/.config`)
@@ -264,9 +270,10 @@ predictable across hosts.
 
 #### CLI flags
 
-- `zshift random --excluded-path <path> --liked-path <path> --themes-dir <dir>`
-- `zshift like <theme> --liked-path <path>`
-- `zshift exclude <theme> --excluded-path <path>`
+- `zshift random --excluded-path <path> --liked-path <path> --themes-dir <dir> \`
+  `--excluded-fonts-path <path> --liked-fonts-path <path>`
+- `zshift like <name> --kind theme|font [--liked-path <path>] [--liked-fonts-path <path>]`
+- `zshift exclude <name> --kind theme|font [--excluded-path <path>] [--excluded-fonts-path <path>]`
 - `zshift link-zshrc --custom-zshrc <path> [--backup]`
 
 #### Subcommands
@@ -275,9 +282,10 @@ predictable across hosts.
   - Seeds `excluded.txt` and `liked.txt` under the user config dir with team defaults.
 - `zshift config show [--json]`
   - Prints resolved paths and sources (flag/env/xdg/bundle).
-- `zshift list available|liked|excluded [--json] [--themes-dir <dir>] \
-  [--excluded-path <p>] [--liked-path <p>]`
-  - Lists effective items for scripting or inspection.
+- `zshift list available|liked|excluded|available-fonts|liked-fonts|excluded-fonts [--json] \
+  [--themes-dir <dir>] [--excluded-path <p>] [--liked-path <p>] [--excluded-fonts-path <p>] \
+  [--liked-fonts-path <p>]`
+  - Lists effective theme or FIGlet font entries for scripting or inspection.
 
 #### Quickstart
 
@@ -291,6 +299,8 @@ zshift random
 # 3) Curate your lists
 zshift like ys
 zshift exclude robbyrussell
+# Prefer a FIGlet font
+zshift like block --kind font
 
 # 4) Inspect current resolution
 zshift config show --json | jq .
@@ -314,9 +324,17 @@ snippet is:
 import SwiftFigletKit
 
 let theme = "ys" // dynamically chosen by zshift
-let banner = SFKRenderer.renderRandomBanner(text: "ZShift x " + theme, options: .init(newline: false))
+let font = SFKFonts.randomName() ?? "standard"
+let banner = SFKRenderer.render(
+  text: "ZShift x " + theme,
+  font: .named(font),
+  color: .mixedRandom(),
+  options: .init(newline: false)
+)
+let canonicalFont = ZShiftConfig.canonicalFontName(font)
 print(banner)
-print("ZSH_THEME=\(theme)") // the team template prefers a prefixed last line
+print("FIGLET_FONT=\(canonicalFont)")
+print("ZSH_THEME=\(theme)") // the team template expects the theme as the last line
 ```
 
 ### Team‑first zsh shim (recommended)

@@ -91,14 +91,44 @@ if [[ $WRKSTRM_IS_INTERACTIVE == 1 ]]; then
   # Interactive: if zshift is available, announce theme with figlet and set ZSH_THEME
   if command -v zshift >/dev/null 2>&1; then
     _zsout=$(zshift random --emit prefixed 2>/dev/null || true)
-    # Print banner while hiding the theme line (last line)
-    print -r -- "$_zsout" | sed '$d'
-    # Extract theme from last line; tolerate legacy "ZSH_THEME=" prefix
+    # Print banner while hiding the metadata lines (last two lines)
+    if [[ -n $_zsout ]]; then
+      print -r -- "$_zsout" | sed '$d' | sed '$d'
+    fi
+    # Extract font and theme from the last two lines
+    _zsfont=$(print -r -- "$_zsout" | tail -n 2 | head -n 1 | sed 's/FIGLET_FONT=//')
     _zstheme=$(print -r -- "$_zsout" | tail -n 1 | sed 's/.*ZSH_THEME=//')
     [[ -n $_zstheme ]] && export ZSH_THEME="$_zstheme"
-    # Also echo the theme explicitly so users can like/exclude it easily
+    # Echo canonical identifiers so users can like/exclude them easily
+    if [[ -n $_zsfont ]]; then
+      print -r -- "FIGLET_FONT=$_zsfont"
+    fi
     if [[ -n $_zstheme ]]; then
       print -r -- "ZSH_THEME=$_zstheme"
+    fi
+  fi
+
+  # Motivational quote from CLIA (Apple Intelligence) on macOS 26 interactive shells only
+  if [[ "$OSTYPE" == darwin* ]]; then
+    if [[ -z ${WRKSTRM_MACOS_MAJOR:-} ]]; then
+      WRKSTRM_MACOS_MAJOR=$(sw_vers -productVersion 2>/dev/null | cut -d'.' -f1)
+    fi
+    if [[ ${WRKSTRM_MACOS_MAJOR:-0} -ge 26 ]] && command -v clia >/dev/null 2>&1; then
+      _clia_quote_json=$(clia chat --provider apple \
+        --prompt 'Share a short motivational quote for today.' \
+        --one-shot-output json --no-banner 2>/dev/null || true)
+      if [[ -n $_clia_quote_json ]]; then
+        _clia_quote_provider=$(print -r -- "$_clia_quote_json" |
+          plutil -extract provider.displayName raw - 2>/dev/null || true)
+        _clia_quote_text=$(print -r -- "$_clia_quote_json" |
+          plutil -extract answer.text raw - 2>/dev/null || true)
+        if [[ -n $_clia_quote_provider ]]; then
+          print -r -- "$_clia_quote_provider"
+        fi
+        if [[ -n $_clia_quote_text ]]; then
+          print -r -- "$_clia_quote_text"
+        fi
+      fi
     fi
   fi
 
