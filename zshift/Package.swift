@@ -25,7 +25,8 @@ let package = Package(
     .package(
       url: "https://github.com/apple/swift-argument-parser.git",
       from: "1.6.0"
-    )
+    ),
+    .package(name: "CommonShell", path: "../../universal/common/domain/system/common-shell"),
   ],
   targets: [
     .executableTarget(
@@ -33,6 +34,7 @@ let package = Package(
       dependencies: [
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
         .product(name: "SwiftFigletKit", package: "SwiftFigletKit"),
+        .product(name: "CommonShell", package: "CommonShell"),
       ],
       resources: [
         .process("Resources")  // This will copy all files in the Resources folder),

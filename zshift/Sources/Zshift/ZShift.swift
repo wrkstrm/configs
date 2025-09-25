@@ -1,6 +1,7 @@
 import ArgumentParser
 import Foundation
 import SwiftFigletKit
+import CommonShell
 
 @main
 struct ZShift: AsyncParsableCommand {
@@ -937,16 +938,9 @@ struct Doctor: AsyncParsableCommand {
     do {
       // Invoke the current executable with "random" to capture output
       let me = URL(fileURLWithPath: CommandLine.arguments.first ?? "zshift")
-      let p = Process()
-      p.executableURL = me
-      p.arguments = ["random"]
-      let pipe = Pipe()
-      p.standardOutput = pipe
-      p.standardError = Pipe()
-      try p.run()
-      p.waitUntilExit()
-      let data = pipe.fileHandleForReading.readDataToEndOfFile()
-      if let s = String(data: data, encoding: .utf8) {
+      let shell = CommonShell()
+      let s = try await shell.run(host: .direct, executable: .path(me.path), arguments: ["random"]) 
+      do {
         let lines = s.split(separator: "\n", omittingEmptySubsequences: false)
         if let last = lines.last {
           lastLine = String(last).trimmingCharacters(in: .whitespacesAndNewlines)
@@ -956,8 +950,6 @@ struct Doctor: AsyncParsableCommand {
         } else {
           contract = "bare"
         }
-      } else {
-        contract = "unknown"
       }
     } catch {
       contract = "unknown"

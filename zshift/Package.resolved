@@ -1,5 +1,5 @@
 {
-  "originHash" : "44de120f92570102aff12e6d992a4f4f198d809e62e52c87b885df7c9f38ba98",
+  "originHash" : "6a51eea674dd591b94221808531039105868b204e166e5c0c61193bb29cf7223",
   "pins" : [
     {
       "identity" : "swift-argument-parser",
@@ -42,17 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-tools-support-core.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "a00f2e3c7c80595ecea990206b9024ebaa767613"
-      }
-    },
-    {
-      "identity" : "xmlcoder",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/CoreOffice/XMLCoder.git",
-      "state" : {
-        "revision" : "b1e944cbd0ef33787b13f639a5418d55b3bed501",
-        "version" : "0.17.1"
+        "revision" : "e8fbc8b05a155f311b862178d92d043afb216fe3",
+        "version" : "0.7.3"
       }
     }
   ],
