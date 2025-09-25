@@ -3,6 +3,13 @@
 This guide explains the required environment variables for working with wrkstrm packages and tools.
 This guide is specifically for M class Macs.
 
+> **Codex harness reminder**
+>
+> The checked-in Codex CLI harness is a generic profile. New contributors must
+> run through the setup steps below and intentionally opt into repo-specific
+> behaviors (agents, timers, logging). Do not assume the harness auto-detects
+> todo3 conventions; wire them in explicitly during onboarding.
+
 ## Installation
 
 ### Prerequisites
