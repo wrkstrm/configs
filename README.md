@@ -87,12 +87,12 @@ This environment variable controls dependency resolution behavior:
    ```bash
    # From a package directory that builds an executable target
    # Example: CLIA
-   cd code/mono/apple/spm/universal/domain/ai/clia
+   cd code/mono/apple/spm/clis/agents/clia
    swift package experimental-install --configuration release
 
    # Ensure ~/.swiftpm/bin is in your PATH (e.g., in ~/.zprofile)
    export PATH="$HOME/.swiftpm/bin:$PATH"
-   clia --help
+   clia-agent-cli --help
    ```
 
    Optional: repo‑local bin for scoped installs (does not touch user PATH):
@@ -103,9 +103,9 @@ This environment variable controls dependency resolution behavior:
    export PATH="$(pwd)/.wrkstrm/clia/bin/swift:$PATH" # optional, current shell only
 
    # Build then link a tool into the local bin (example: CLIA)
-   (cd code/mono/apple/spm/universal/domain/ai/clia && swift build -c release)
-   ln -sf "$(pwd)/code/mono/apple/spm/universal/domain/ai/clia/.build/release/clia" \
-         ".wrkstrm/clia/bin/swift/clia"
+   (cd code/mono/apple/spm/clis/agents/clia && swift build -c release)
+   ln -sf "$(pwd)/code/mono/apple/spm/clis/agents/clia/.build/release/clia-agent-cli" \
+         ".wrkstrm/clia/bin/swift/clia-agent-cli"
    ```
 
    Notes:

@@ -113,8 +113,8 @@ if [[ $WRKSTRM_IS_INTERACTIVE == 1 ]]; then
     if [[ -z ${WRKSTRM_MACOS_MAJOR:-} ]]; then
       WRKSTRM_MACOS_MAJOR=$(sw_vers -productVersion 2>/dev/null | cut -d'.' -f1)
     fi
-    if [[ ${WRKSTRM_MACOS_MAJOR:-0} -ge 26 ]] && command -v clia >/dev/null 2>&1; then
-      _clia_quote_json=$(clia chat --provider apple \
+    if [[ ${WRKSTRM_MACOS_MAJOR:-0} -ge 26 ]] && command -v clia-agent-cli >/dev/null 2>&1; then
+      _clia_quote_json=$(clia-agent-cli chat --provider apple \
         --prompt 'Share a short motivational quote for today.' \
         --one-shot-output json --no-banner 2>/dev/null || true)
       if [[ -n $_clia_quote_json ]]; then
