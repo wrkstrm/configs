@@ -11,3 +11,22 @@ This directory houses environment and tooling configs for Swift packages.
 - Git command approval: do not run any `git` commands without explicit user approval
   (including but not limited to `clone`, `status`, `add`, `commit`, `reset`, `rebase`, `push`,
   `submodule`, `config`). Prefer reading workspace files over invoking `git` when possible.
+
+## CLIA canonicals and first launch
+
+- Canonical loaders: JSON triads under `.wrkstrm/clia/agents/**`.
+- Canonical MD (human): persona and system‑instructions alongside triads.
+- Mirrors: `.generated/agent.md` is non‑canonical; use to validate rendering.
+- Default agent: `^codex` unless an explicit agent load is requested via
+  `>agentSlug` (e.g., `>clia`, `>carrie`).
+
+Checklist
+
+- `!sync` → reset, thin‑scan, determine scope; load triads; apply sandbox/approvals; announce mode.
+
+Diverge paths
+
+- If in submodule: stage a DocC request with diffs/rationale in parent repo.
+- Use CommonShell/CommonProcess; avoid `Foundation.Process`.
+
+DocC link: `code/.wrkstrm/clia/docc/agents-onboarding.docc` (preview from repo root).
