@@ -99,18 +99,18 @@ This environment variable controls dependency resolution behavior:
 
    ```bash
    # From the repo root
-   mkdir -p .wrkstrm/clia/bin/swift
-   export PATH="$(pwd)/.wrkstrm/clia/bin/swift:$PATH" # optional, current shell only
+   mkdir -p .clia/bin/swift
+   export PATH="$(pwd)/.clia/bin/swift:$PATH" # optional, current shell only
 
    # Build then link a tool into the local bin (example: CLIA)
    (cd code/mono/apple/spm/clis/agents/clia && swift build -c release)
    ln -sf "$(pwd)/code/mono/apple/spm/clis/agents/clia/.build/release/clia-agent-cli" \
-         ".wrkstrm/clia/bin/swift/clia-agent-cli"
+         ".clia/bin/swift/clia-agent-cli"
    ```
 
    Notes:
    - Preferred: `experimental-install` to `~/.swiftpm/bin` for user‑level availability.
-   - Alternative: repo‑local `.wrkstrm/clia/bin/swift/` to avoid modifying global PATH.
+   - Alternative: repo‑local `.clia/bin/swift/` to avoid modifying global PATH.
 
 ### Verify Your Tools
 
