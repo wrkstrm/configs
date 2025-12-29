@@ -330,7 +330,7 @@ snippet is:
 ```swift
 import SwiftFigletKit
 
-let theme = "ys" // dynamically chosen by zshift
+let theme = "ys"  // dynamically chosen by zshift
 let font = SFKFonts.randomName() ?? "standard"
 let banner = SFKRenderer.render(
   text: "ZShift x " + theme,
@@ -341,7 +341,7 @@ let banner = SFKRenderer.render(
 let canonicalFont = ZShiftConfig.canonicalFontName(font)
 print(banner)
 print("FIGLET_FONT=\(canonicalFont)")
-print("ZSH_THEME=\(theme)") // the team template expects the theme as the last line
+print("ZSH_THEME=\(theme)")  // the team template expects the theme as the last line
 ```
 
 ### Team‑first zsh shim (recommended)
