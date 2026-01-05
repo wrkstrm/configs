@@ -1,0 +1,7 @@
+only_rules:
+  - file_length
+  - file_name
+
+file_length:
+  warning: 800
+  error: 1000
