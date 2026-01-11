@@ -12,7 +12,7 @@ This directory houses environment and tooling configs for Swift packages.
   (including but not limited to `clone`, `status`, `add`, `commit`, `reset`, `rebase`, `push`,
   `submodule`, `config`). Prefer reading workspace files over invoking `git` when possible.
 
-## CLIA canonicals and first launch
+## CLIA Canonicals and First Launch
 
 - Canonical loaders: JSON triads under `.clia/agents/**`.
 - Canonical MD (human): persona and system‑instructions alongside triads.

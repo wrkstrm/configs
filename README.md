@@ -154,13 +154,13 @@ markdownlint-cli2 --config linting/.markdownlint.jsonc "**/*.md"
 
 ## Troubleshooting
 
-### Swift toolchains (Swiftly)
+### Swift Toolchains (Swiftly)
 
 - Use the Xcode Default toolchain for Apple SDK builds. A mismatched compiler/SDK (e.g., Swift 6.1.x compiler vs Xcode 26 SDK built with Swift 6.2) will fail with Darwin module errors.
 - If `swiftly toolchain list` does not include your current Xcode toolchain, do not force Swiftly; remove the pinned entry (e.g., `swiftly toolchain remove swift-6.1.2-RELEASE`) and rely on Xcode Default.
 - Sanity checks: `xcodebuild -version`, `xcrun swift --version`, and ensure `SWIFT_EXEC`/`TOOLCHAINS` are unset.
 
-### **brew issues**
+### **Brew Issues**
 
 If you encounter any issues:
 
@@ -182,7 +182,7 @@ If you encounter any issues:
    echo $PATH | grep brew
    ```
 
-### **.zprofile issues**
+### **.Zprofile Issues**
 
 If the variable isn't being set:
 
@@ -206,7 +206,7 @@ If the variable isn't being set:
    echo $SPM_USE_LOCAL_DEPS
    ```
 
-## Zsh setup (recommended)
+## Zsh Setup (Recommended)
 
 Use the top‑level setup helper to create or update your `~/.zshrc`. It prefers the Swift CLI (zshift)
 and installs common Zsh extras by default.
@@ -226,7 +226,7 @@ Flags:
 If Swift is unavailable, the script falls back to writing the bundled template
 (`zshift/Sources/Zshift/Resources/zshrc.txt`) into `~/.zshrc` with clear markers.
 
-## Setting up zshift
+## Setting Up Zshift
 
 `zshift` is a small Swift utility that links your `.zshrc` to the shared configuration in this
 repository. To run the setup script:
@@ -238,13 +238,13 @@ cd zshift
 
 After running the script, a new `.zshrc` symlink will be created and your configuration reloaded.
 
-### Zshift configuration
+### Zshift Configuration
 
 zshift resolves configuration from flags, environment variables, user config files, and bundled
 team defaults with a clear precedence. This removes hard‑coded lists and keeps behavior
 predictable across hosts.
 
-#### Precedence (highest to lowest)
+#### Precedence (Highest to Lowest)
 
 1. CLI flags (`--excluded-path`, `--liked-path`, `--themes-dir`)
 2. Environment variables (`ZSHIFT_EXCLUDED`, `ZSHIFT_LIKED`, `ZSH_THEMES_DIR`)
@@ -255,7 +255,7 @@ predictable across hosts.
 
 The same precedence applies to FIGlet font lists via `--excluded-fonts-path`, `--liked-fonts-path`, and the `ZSHIFT_FONT_EXCLUDED`/`ZSHIFT_FONT_LIKED` environment variables.
 
-#### Files and locations
+#### Files and Locations
 
 - User config directory: `($ZSHIFT_CONFIG_HOME || $XDG_CONFIG_HOME || ~/.config)/zshift/`
 - User files (created by `zshift config init`):
@@ -264,7 +264,7 @@ The same precedence applies to FIGlet font lists via `--excluded-fonts-path`, `-
   - `fonts/excluded.txt`: newline‑delimited FIGlet fonts to suppress
   - `fonts/liked.txt`: newline‑delimited FIGlet fonts to prefer
 
-#### Environment variables
+#### Environment Variables
 
 - `ZSHIFT_EXCLUDED`: path to excluded list file
 - `ZSHIFT_LIKED`: path to liked list file
@@ -275,7 +275,7 @@ The same precedence applies to FIGlet font lists via `--excluded-fonts-path`, `-
 - `XDG_CONFIG_HOME`: standard XDG config root (defaults to `~/.config`)
 - `ZSHIFT_ZSHRC_TEMPLATE`: optional path used by `link-zshrc` when no flag is passed
 
-#### CLI flags
+#### CLI Flags
 
 - `zshift random --excluded-path <path> --liked-path <path> --themes-dir <dir> \`
   `--excluded-fonts-path <path> --liked-fonts-path <path>`
@@ -322,7 +322,7 @@ zshift config show --json | jq .
 - Use `zshift doctor` to print resolved config dir, list paths and sources, themes dir, and
   bundle availability.
 
-### Banner example (Swift)
+### Banner Example (Swift)
 
 zshift uses SwiftFigletKit’s random rendering API to print a themed banner. The equivalent Swift
 snippet is:
@@ -344,7 +344,7 @@ print("FIGLET_FONT=\(canonicalFont)")
 print("ZSH_THEME=\(theme)")  // the team template expects the theme as the last line
 ```
 
-### Team‑first zsh shim (recommended)
+### Team‑first Zsh Shim (Recommended)
 
 Keep login shells stable by sourcing the shared team template first, then your personal overrides.
 This ensures the figlet banner and theme logic always run, while your aliases and helpers remain.
@@ -386,7 +386,7 @@ This ensures the figlet banner and theme logic always run, while your aliases an
    - Expect a figlet banner and a final `ZSH_THEME=...` line (template parses this to set the theme).
    - `command -v zshift` should resolve (typically `~/.swiftpm/bin/zshift`).
 
-### Team plugins policy
+### Team Plugins Policy
 
 The team template loads a lean, guarded plugin set:
 

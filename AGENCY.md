@@ -1,4 +1,4 @@
-## 2025-09-12 — zshift team plugins stabilized; next steps
+## 2025-09-12 — Zshift Team Plugins Stabilized; Next Steps
 
 - when: 2025-09-13T00:52:52Z
 - who: rismay
