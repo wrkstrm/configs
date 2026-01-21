@@ -2,7 +2,7 @@ import ArgumentParser
 import CommonShell
 import Foundation
 import SwiftFigletKit
-import WrkstrmLog
+import CommonLog
 
 struct Doctor: AsyncParsableCommand {
   static let configuration = CommandConfiguration(
