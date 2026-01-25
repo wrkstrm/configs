@@ -3,7 +3,7 @@ import Foundation
 import PackageDescription
 
 ConfigurationService.local.dependencies = [
-  .package(name: "SwiftFigletKit", path: "../../universal/SwiftFigletKit")
+  .package(name: "swift-figlet-kit", path: "../swift-figlet-kit/zshift")
 ]
 
 ConfigurationService.remote.dependencies = [
@@ -33,7 +33,7 @@ let package = Package(
       name: "Zshift",
       dependencies: [
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
-        .product(name: "SwiftFigletKit", package: "SwiftFigletKit"),
+        .product(name: "SwiftFigletKit", package: "swift-figlet-kit"),
         .product(name: "CommonShell", package: "CommonShell"),
       ],
       resources: [

@@ -355,7 +355,7 @@ This ensures the figlet banner and theme logic always run, while your aliases an
    #!/usr/bin/env zsh
    # wrkstrm ~/.zshrc shim — team first, then personal overrides.
 
-   : ${ZSHIFT_PATH:="$HOME/todo3/code/mono/apple/spm/configs/zshift"}
+   : ${ZSHIFT_PATH:="$HOME/todo3/code/mono/apple/spm/universal/domain/tooling/configs/zshift"}
    TEAM_CFG="$ZSHIFT_PATH/Sources/Zshift/Resources/zshrc.txt"
    PERSONAL_CFG="$HOME/todo3/code/configs/zshrc"
    LOCAL_CFG="$HOME/.zshrc.local"
@@ -376,7 +376,7 @@ This ensures the figlet banner and theme logic always run, while your aliases an
 
    ```zsh
    # Team configs location for the shim
-   export ZSHIFT_PATH="$HOME/todo3/code/mono/apple/spm/configs/zshift"
+   export ZSHIFT_PATH="$HOME/todo3/code/mono/apple/spm/universal/domain/tooling/configs/zshift"
 
    # Ensure repo‑installed SwiftPM tools (e.g., zshift) are on PATH
    export PATH="$HOME/.swiftpm/bin:$PATH"
