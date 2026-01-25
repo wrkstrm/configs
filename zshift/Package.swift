@@ -3,11 +3,14 @@ import Foundation
 import PackageDescription
 
 ConfigurationService.local.dependencies = [
-  .package(name: "swift-figlet-kit", path: "../swift-figlet-kit/zshift")
+  .package(name: "swift-figlet-kit", path: "../swift-figlet-kit")
 ]
 
 ConfigurationService.remote.dependencies = [
-  .package(url: "https://github.com/wrkstrm/SwiftFigletKit.git", from: "1.0.0")
+  .package(
+    name: "swift-figlet-kit",
+    url: "https://github.com/wrkstrm/swift-figlet-kit.git",
+    from: "1.0.0")
 ]
 
 let package = Package(
