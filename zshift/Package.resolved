@@ -49,7 +49,7 @@
     {
       "identity" : "swiftfigletkit",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/wrkstrm/SwiftFigletKit.git",
+      "location" : "https://github.com/wrkstrm/swift-figlet-kit.git",
       "state" : {
         "revision" : "8b5d2eefd2082d3f7b6245a5bbe9bf450377d623",
         "version" : "1.3.0"
